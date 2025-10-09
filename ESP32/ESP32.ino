@@ -1,10 +1,13 @@
 #include <WiFi.h>
 #include <NetworkClient.h>
-#include <WebServer.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
 #include "webpagecode.h"
 #include "WifiCred.h"
 #include <DFRobot_DHT11.h>
+
+AsyncWebServer server(80);
 
 DFRobot_DHT11 DHT;
 #define DHT11_PIN 27
@@ -13,20 +16,18 @@ const int ECHO_PIN = 14;
 long duration;
 float cms, inches;
 
-WebServer server(80);
-
 String getTemp() {
    DHT.read(DHT11_PIN);
   Serial.print("temp:");
   Serial.print(DHT.temperature);
-  return String(DHT.temperature);
+  return String(DHT.temperature) + " °C";
 }
 
 String getHumid(){
    DHT.read(DHT11_PIN);
   Serial.print("  humi:");
   Serial.println(DHT.humidity);
-  return String(DHT.humidity);
+  return String(DHT.humidity) + " %";
 }
 
 String getDis(){
@@ -37,27 +38,33 @@ delayMicroseconds (10) ;
 digitalWrite (TRIG_PIN, LOW);
 duration = pulseIn (ECHO_PIN, HIGH) ;
 cms = (duration/2) / 29.1;
-return String(cms);
+return String(cms) + " Cm";
 }
 
-void handleRoot() {
-  String message = homePagePart1 + getTemp() + homePagePart2 + getHumid() + homePagePart3 + getDis() + homePagePart4;
-  server.send(200, "text/html", message);
+
+void handleRoot(AsyncWebServerRequest *request) {
+    String page = String(homePage);
+    page.replace("%TEMPERATURE%", getTemp());
+    page.replace("%HUMIDITY%", getHumid());
+    page.replace("%DISTANCE%", getDis());
+    request->send(200, "text/html", page);
 }
 
-void handleNotFound() {
+void handleNotFound(AsyncWebServerRequest *request)  {
   String message = "File Not Found\n\n";
   message += "URI: ";
-  message += server.uri();
+  message += request->url();
   message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += (request->method() == HTTP_GET) ? "GET" : "POST";
   message += "\nArguments: ";
-  message += server.args();
+  message += request->params();
   message += "\n";
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  for (uint8_t i = 0; i < request->params(); i++) 
+  {
+    const AsyncWebParameter* p = request->getParam(i);
+    message += " " + p->name() + ": " + p->value() + "\n";
   }
-  server.send(404, "text/plain", message);
+ request->send(404, "text/plain", message);
 }
 
 void setup(void) {
@@ -82,8 +89,22 @@ void setup(void) {
   if (MDNS.begin("iot")) {
     Serial.println("MDNS responder started");
   }
+
+
   
-  server.on("/", handleRoot);
+  server.on("/", HTTP_GET, handleRoot);
+
+  server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", getTemp().c_str());
+  });
+
+  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", getHumid().c_str());
+  });
+
+  server.on("/distance", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain",getDis().c_str());
+  });
 
   server.onNotFound(handleNotFound);
 
@@ -92,6 +113,4 @@ void setup(void) {
 }
 
 void loop(void) {
-  server.handleClient();
-  delay(2);  //allow the cpu to switch to other tasks
 }
