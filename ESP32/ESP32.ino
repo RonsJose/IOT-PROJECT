@@ -6,9 +6,16 @@
 #include "webpagecode.h"
 #include "WifiCred.h"
 #include <DFRobot_DHT11.h>
+#include <Wire.h>
+#include "MAX30100_PulseOximeter.h"
 
 AsyncWebServer server(80);
 
+#define REPORTING_PERIOD_MS 1000
+PulseOximeter pox;
+uint32_t lastReport = 0;
+float heartRate = 0;
+float spo2 = 0;
 DFRobot_DHT11 DHT;
 #define DHT11_PIN 27
 const int TRIG_PIN = 25;
@@ -41,12 +48,22 @@ cms = (duration/2) / 29.1;
 return String(cms) + " Cm";
 }
 
+String getHeartRate() {
+  return String(heartRate, 1) + " bpm";
+}
+
+String getSpO2() {
+  return String(spo2, 1) + " %";
+}
+
 
 void handleRoot(AsyncWebServerRequest *request) {
     String page = String(homePage);
     page.replace("%TEMPERATURE%", getTemp());
     page.replace("%HUMIDITY%", getHumid());
     page.replace("%DISTANCE%", getDis());
+    page.replace("%HEARTRATE%", getHeartRate());
+    page.replace("%SPO2%", getSpO2());
     request->send(200, "text/html", page);
 }
 
@@ -89,8 +106,15 @@ void setup(void) {
   if (MDNS.begin("iot")) {
     Serial.println("MDNS responder started");
   }
+  
+  Serial.println("Initializing MAX30100...");
 
-
+    if (!pox.begin()) {
+    Serial.println("FAILED to initialize MAX30100!");
+    while (1);
+  } else {
+    Serial.println("MAX30100 initialized successfully!");
+  }
   
   server.on("/", HTTP_GET, handleRoot);
 
@@ -106,6 +130,13 @@ void setup(void) {
     request->send(200, "text/plain",getDis().c_str());
   });
 
+  server.on("/heartRate", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", getHeartRate().c_str());
+  });
+  server.on("/spO2", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", getSpO2().c_str());
+  });
+
   server.onNotFound(handleNotFound);
 
   server.begin();
@@ -113,4 +144,13 @@ void setup(void) {
 }
 
 void loop(void) {
+   pox.update();
+
+  
+  if (millis() - lastReport > REPORTING_PERIOD_MS) {
+    heartRate = pox.getHeartRate();
+    spo2 = pox.getSpO2();
+    Serial.printf("Heart Rate: %.1f bpm | SpO2: %.1f%%\n", heartRate, spo2);
+    lastReport = millis();
+  }
 }
