@@ -99,9 +99,19 @@ flex-wrap: wrap;
             <p id="humidity">%HUMIDITY% </p>
            </div>
            <div class="item item-3">
-            <img src="https://cdn-icons-png.flaticon.com/512/335/335648.png" alt="ultra-sonic-sensor" width="100"> 
+            <img src="https://cdn-icons-png.flaticon.com/512/335/335648.png" alt="Distance Img" width="100"> 
             <h2>Distance</h2>
             <p id="distance">%DISTANCE% </p>
+           </div>
+           <div class="item item-4">
+            <img src="https://cdn.freebiesupply.com/logos/large/2x/heart-logo-png-transparent.png" alt="Heart IMG" width="100"> 
+            <h2>Heart Rate</h2>
+            <p id="heartRate">%HEARTRATE% </p>
+           </div>
+            <div class="item item-5">
+            <img src="https://m.media-amazon.com/images/S/abs-image-upload-na/0/AmazonStores/A21TJRUUN4KGV/bba883408bb96efa3e99895f04d52fac.w300.h300.png" alt="Blood Oxygen IMG" width="100"> 
+            <h2>SpO2</h2>
+            <p id="spO2">%SPO2% </p>
            </div>
         </div>
 
@@ -141,6 +151,29 @@ setInterval(function ( ) {
   xhttp.open("GET", "/distance", true);
   xhttp.send();
 }, 5000 ) ;
+
+  setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("heartRate").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/heartRate", true);
+  xhttp.send();
+}, 1000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("spO2").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/spO2", true);
+  xhttp.send();
+}, 1000 ) ;
+
 </script>
 
 </html>
