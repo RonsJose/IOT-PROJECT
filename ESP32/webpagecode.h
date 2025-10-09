@@ -1,11 +1,12 @@
-String homePagePart1 = F(R"=====(<!DOCTYPE html>
+const char homePage[] PROGMEM = (R"=====(
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/10355/10355707.png">
-   <style>
+    <style> 
     *{
     margin: 0px;
     padding: 0px;
@@ -25,33 +26,40 @@ String homePagePart1 = F(R"=====(<!DOCTYPE html>
 }
 
 #Nav{ 
-    background-color:rgb(209, 235, 241) ;
+    background-color: rgb(209, 235, 241);
     min-height: 75px;
     line-height: 75px;
+    display: flex;        
+    align-items: center;    
+    justify-content: center;
     position: sticky;
-    top: 0;
-    z-index: 1000;  
+    top:0;
+    z-index: 1000;
 }
 
 #SSIA{
-    display: flex;
-    text-align: center;
-    font-size: 35px; 
+    font-size: 35px;
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
+@media (max-width: 600px) {
+    #SSIA {
+        font-size: 20px;             
+        padding: 0 5px;              
+        line-height: 1.2;            
+    }
+}
 #container{
 display: flex;
 padding-top: 5%;
 justify-content: space-around;
+flex-wrap: wrap;
 }
 
 
 .item{
+  position: relative;  
   width: 300px;
   height: 300px;
   border-radius: 10px;
@@ -61,20 +69,17 @@ justify-content: space-around;
   justify-content:center;
   font-size: 1.5rem;
   font-weight: bold;
+  margin: 10px;
+  background-color: rgb(209, 235, 241);
 }
 
 .item img{
     position: absolute;
-    top: 210px;
+    top: 20px;
 }
-
-.item-1{background-color: rgb(209, 235, 241);}
-.item-2{background-color: rgb(209, 235, 241);}
-.item-3{background-color: rgb(209, 235, 241);}
-   </style>
+    </style>
 </head>
-
- <body>
+<body>
     <div id="wrapper">
         <div id="Nav" class="clearfix">
             <nav>
@@ -86,24 +91,57 @@ justify-content: space-around;
            <div class="item item-1">
              <img src="https://uxwing.com/wp-content/themes/uxwing/download/medical-science-lab/high-temperature-icon.png" alt="temperature-icon" width="100">
              <h2>Temperature</h2>
-             <p>)=====");
-String homePagePart2 = F(R"=====(°C</p>
+             <p id="temperature">%TEMPERATURE% </p>
            </div>
            <div class="item item-2">
             <img src="https://static.vecteezy.com/system/resources/thumbnails/024/984/141/small_2x/3d-weather-forecast-icon-raindrops-air-humidity-percentage-3d-illustration-png.png" alt="humidity-icon" width="100">
             <h2>Humidity</h2>
-            <p></p>
-            <p> )=====");
-String homePagePart3 = F(R"=====( %</p>
+            <p id="humidity">%HUMIDITY% </p>
            </div>
            <div class="item item-3">
             <img src="https://cdn-icons-png.flaticon.com/512/335/335648.png" alt="ultra-sonic-sensor" width="100"> 
             <h2>Distance</h2>
-            <p> )=====");
-String homePagePart4 = F(R"=====( Cm</p>
+            <p id="distance">%DISTANCE% </p>
            </div>
         </div>
 
     </div>
 </body>
-</html>)=====");
+
+<script>
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("temperature").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/temperature", true);
+  xhttp.send();
+}, 5000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("humidity").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/humidity", true);
+  xhttp.send();
+}, 5000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("distance").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/distance", true);
+  xhttp.send();
+}, 5000 ) ;
+</script>
+
+</html>
+)=====");
