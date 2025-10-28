@@ -11,9 +11,9 @@
 
 AsyncWebServer server(80);
 
-#define REPORTING_PERIOD_MS 1000
+#define PERIOD 1000
 PulseOximeter pox;
-uint32_t lastReport = 0;
+uint32_t previous = 0;
 float heartRate = 0;
 float spo2 = 0;
 DFRobot_DHT11 DHT;
@@ -25,16 +25,33 @@ float cms, inches;
 
 String getTemp() {
    DHT.read(DHT11_PIN);
-  Serial.print("temp:");
-  Serial.print(DHT.temperature);
-  return String(DHT.temperature) + " °C";
+  if(isnan(DHT.temperature))
+  {
+    Serial.println("Failed to get reading from DHT T");
+    return "--";
+  }
+  else  
+  {
+     Serial.print("temp:");
+    Serial.print(DHT.temperature);
+    return String(DHT.temperature) + " °C";
+  }
 }
 
 String getHumid(){
-   DHT.read(DHT11_PIN);
+  DHT.read(DHT11_PIN);
+  if(isnan(DHT.humidity))
+  {
+    Serial.println("Failed to get reading from DHT H");
+    return "--";
+  }
+else 
+{
+  DHT.read(DHT11_PIN);
   Serial.print("  humi:");
   Serial.println(DHT.humidity);
   return String(DHT.humidity) + " %";
+}
 }
 
 String getDis(){
@@ -45,15 +62,42 @@ delayMicroseconds (10) ;
 digitalWrite (TRIG_PIN, LOW);
 duration = pulseIn (ECHO_PIN, HIGH) ;
 cms = (duration/2) / 29.1;
+if (isnan(cms))
+{
+  Serial.println("Failed to get reading from HCRS04");
+  return "--";
+}
+else
+{
 return String(cms) + " Cm";
 }
 
+}
+
 String getHeartRate() {
-  return String(heartRate, 1) + " bpm";
+  if(isnan(heartRate))
+  {
+    Serial.println("Failed to get reading from heart click heart");
+    return "--";
+  }
+  else
+  {
+    return String(heartRate, 1) + " bpm";
+  }
+  
 }
 
 String getSpO2() {
-  return String(spo2, 1) + " %";
+  if(isnan(spo2))
+  {
+    Serial.println("Failed to get reading from heart click spo2");
+    return "--";
+  }
+  else
+  {
+    return String(spo2, 1) + " %";
+  }
+  
 }
 
 
@@ -107,8 +151,6 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
   
-  Serial.println("Initializing MAX30100...");
-
     if (!pox.begin()) {
     Serial.println("FAILED to initialize MAX30100!");
     while (1);
@@ -147,10 +189,10 @@ void loop(void) {
    pox.update();
 
   
-  if (millis() - lastReport > REPORTING_PERIOD_MS) {
+  if (millis() - previous > PERIOD) {
     heartRate = pox.getHeartRate();
-    spo2 = pox.getSpO2();
+    spo2 = pox.getSpO2(); 
     Serial.printf("Heart Rate: %.1f bpm | SpO2: %.1f%%\n", heartRate, spo2);
-    lastReport = millis();
+    previous = millis();
   }
 }

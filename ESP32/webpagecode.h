@@ -1,3 +1,5 @@
+#include "api.h"
+
 const char homePage[] PROGMEM = (R"=====(
     <!DOCTYPE html>
 <html lang="en">
@@ -77,6 +79,11 @@ flex-wrap: wrap;
     position: absolute;
     top: 20px;
 }
+
+#map {
+  height: 500px;
+  width: 300px;
+}
     </style>
 </head>
 <body>
@@ -113,6 +120,11 @@ flex-wrap: wrap;
             <h2>SpO2</h2>
             <p id="spO2">%SPO2% </p>
            </div>
+           <div id= "map" class="item item-6"></div>
+
+            <!-- prettier-ignore -->
+    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: API_KEY, v: "weekly"});</script>
         </div>
 
     </div>
@@ -173,6 +185,24 @@ setInterval(function ( ) {
   xhttp.open("GET", "/spO2", true);
   xhttp.send();
 }, 1000 ) ;
+
+  let map;
+async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    map = new Map(document.getElementById("map"), {
+        center: { lat: 53.277556, lng: -9.009750 },
+        zoom: 10,
+    });
+
+    new google.maps.Marker({
+                position: { lat: 53.277556, lng: -9.009750 },
+                map: map,
+                title: "Current",
+            });
+}
+
+
+initMap();
 
 </script>
 
