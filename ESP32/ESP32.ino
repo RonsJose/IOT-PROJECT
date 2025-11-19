@@ -8,13 +8,15 @@
 #include <DFRobot_DHT11.h>
 #include <Wire.h>
 #include "MAX30100_PulseOximeter.h"
+#include "ThingSpeak.h"
+#include "API.h"
 #include <ESP_Mail_Client.h>
 
 AsyncWebServer server(80);
 
 #define PERIOD 1000
 PulseOximeter pox;
-uint32_t previous = 0;
+int previous = 0;
 float heartRate = 0;
 float spo2 = 0;
 DFRobot_DHT11 DHT;
@@ -23,83 +25,49 @@ const int TRIG_PIN = 25;
 const int ECHO_PIN = 14;
 long duration;
 float cms, inches;
-#define emailSenderAccount    "esp32rj@gmail.com"
-#define emailSenderPassword   "bcho nulq vuvz rixe"
-#define smtpServer            "smtp.gmail.com"
-#define smtpServerPort        465
-#define emailSubject          "ESP32-CAM Photo Captured"
-#define emailRecipient        "g004642115@atu.ie"
-
+unsigned long channelNum=5;
+WiFiClient client;
+#define UPLOAD_PERIOD 10000
+int uploadLast=0;
+TaskHandle_t Task1;
 SMTPSession smtp;
+#define RECIPIENT_EMAIL "g004642115@atu.ie"
+#define AUTHOR_EMAIL "esp32rj@gmail.com"
+#define AUTHOR_PASSWORD "bcho nulq vuvz rixe"
+#define SMTP_PORT 465
+#define SMTP_HOST "smtp.gmail.com"
 
 void smtpCallback(SMTP_Status status);
 
-void smtpCallback(SMTP_Status status){
-  /* Print the current status */
-  Serial.println(status.info());
-
-  /* Print the sending result */
-  if (status.success())
-  {
-    Serial.println("----------------");
-    Serial.printf("Message sent success: %d\n", status.completedCount());
-    Serial.printf("Message sent failled: %d\n", status.failedCount());
-    Serial.println("----------------\n");
-    struct tm dt;
-
-    for (size_t i = 0; i < smtp.sendingResult.size(); i++){
-      /* Get the result item */
-      SMTP_Result result = smtp.sendingResult.getItem(i);
-      time_t ts = (time_t)result.timestamp;
-      localtime_r(&ts, &dt);
-
-      ESP_MAIL_PRINTF("Message No: %d\n", i + 1);
-      ESP_MAIL_PRINTF("Status: %s\n", result.completed ? "success" : "failed");
-      ESP_MAIL_PRINTF("Date/Time: %d/%d/%d %d:%d:%d\n", dt.tm_year + 1900, dt.tm_mon + 1, dt.tm_mday, dt.tm_hour, dt.tm_min, dt.tm_sec);
-      ESP_MAIL_PRINTF("Recipient: %s\n", result.recipients.c_str());
-      ESP_MAIL_PRINTF("Subject: %s\n", result.subject.c_str());
-    }
-    Serial.println("----------------\n");
-
-   // You need to clear sending result as the memory usage will grow up.
-   smtp.sendingResult.clear();
-  }
-}
-
-void sendEmail()
+void Task1Code(void *pvParameters)
 {
-smtp.debug(1);
-smtp.callback(smtpCallback);
-Session_Config config;
-  config.time.ntp_server = F("pool.ntp.org,time.nist.gov");
-  config.time.gmt_offset = 0;
-  config.time.day_light_offset = 1;
-  config.server.host_name = smtpServer;
-  config.server.port = smtpServerPort;
-  config.login.email = emailSenderAccount;
-  config.login.password = emailSenderPassword;
-  config.login.user_domain = "";
+  for(;;)
+  {
+    int now= millis();
+    if(now-uploadLast>UPLOAD_PERIOD)
+  {
+  ThingSpeak.setField(1,DHT.temperature);
+  ThingSpeak.setField(2,DHT.humidity);
+  ThingSpeak.setField(3,heartRate);
+  ThingSpeak.setField(4,spo2);
+  ThingSpeak.setField(5,cms);
 
-  SMTP_Message message;
-  message.enable.chunking = true;
-  message.sender.name = "ESP32-CAM";
-  message.sender.email = emailSenderAccount;
-  message.subject = emailSubject;
-  message.addRecipient("Sara", emailRecipient);
+  int a = ThingSpeak.writeFields(channelNum,ApiKey);
+  if(a==200)
+  {
+    Serial.println("Good");
+  }
+  else
+  {
+    Serial.println("Bad");
+  }
+  uploadLast=now;
 
-  String htmlMsg = "<h2>Photo captured with ESP32-CAM and attached in this email.</h2>";
-  message.html.content = htmlMsg.c_str();
-  message.html.charSet = "utf-8";
-  message.html.transfer_encoding = Content_Transfer_Encoding::enc_qp;
+  }
+  vTaskDelay(100/portTICK_PERIOD_MS);
 
-  message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_normal;
-  message.response.notify = esp_mail_smtp_notify_success | esp_mail_smtp_notify_failure | esp_mail_smtp_notify_delay;
-  if (!smtp.connect(&config))
-    return;
-
-  if (!MailClient.sendMail(&smtp, &message, true))
-    Serial.println("Error sending Email, " + smtp.errorReason());
-}
+    }
+  }
 
 String getTemp() {
    DHT.read(DHT11_PIN);
@@ -207,6 +175,7 @@ void handleNotFound(AsyncWebServerRequest *request)  {
 
 void setup(void) {
   Serial.begin(115200);
+  ThingSpeak.begin(client);
   pinMode (TRIG_PIN, OUTPUT);
   pinMode (ECHO_PIN, INPUT);
   WiFi.mode(WIFI_STA);
@@ -234,7 +203,86 @@ void setup(void) {
   } else {
     Serial.println("MAX30100 initialized successfully!");
   }
+
+  xTaskCreatePinnedToCore(
+    Task1Code,
+    "Task 1",
+    2000,
+    NULL,
+    2,
+    &Task1,
+    0);
   
+  MailClient.networkReconnect(true);
+  smtp.debug(1);
+  smtp.callback(smtpCallback);
+
+  Session_Config config;
+
+  config.server.host_name = SMTP_HOST;
+  config.server.port = SMTP_PORT;
+  config.login.email = AUTHOR_EMAIL;
+  config.login.password = AUTHOR_PASSWORD;
+
+  config.login.user_domain = F("127.0.0.1");
+  config.time.ntp_server = F("pool.ntp.org,time.nist.gov");
+  config.time.gmt_offset = 0;
+  config.time.day_light_offset = 0;
+
+  SMTP_Message message;
+
+  message.sender.name = F("ESP Mail");
+  message.sender.email = AUTHOR_EMAIL;
+  message.subject = F("Test sending message as embedded files");
+  message.addRecipient(F("Admin"), RECIPIENT_EMAIL);
+
+  message.html.content = F("<span style=\"color:#0055ff;\">This is html message</span>");
+
+  message.html.charSet = F("utf-8");
+
+  message.html.transfer_encoding = Content_Transfer_Encoding::enc_qp;
+
+  message.html.embed.enable = true;
+  
+  message.html.embed.filename = F("test.html");
+
+  message.html.embed.type = esp_mail_smtp_embed_message_type_attachment;
+
+    message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_low;
+
+  message.addHeader(F("Message-ID: <abcde.fghij@gmail.com>"));
+
+  
+  if (!smtp.connect(&config))
+  {
+    MailClient.printf("Connection error, Status Code: %d, Error Code: %d, Reason: %s\n", smtp.statusCode(), smtp.errorCode(), smtp.errorReason().c_str());
+    return;
+  }
+
+  if (!smtp.isLoggedIn())
+  {
+    Serial.println("Error, Not yet logged in.");
+  }
+  else
+  {
+    if (smtp.isAuthenticated())
+      Serial.println("Successfully logged in.");
+    else
+      Serial.println("Connected with no Auth.");
+  }
+
+  if (!MailClient.sendMail(&smtp, &message))
+    MailClient.printf("Error, Status Code: %d, Error Code: %d, Reason: %s\n", smtp.statusCode(), smtp.errorCode(), smtp.errorReason().c_str());
+
+  MailClient.printf("Free Heap: %d\n", MailClient.getFreeHeap());
+
+  message.text.content = F("This is simple plain text message");
+  message.text.charSet = F("utf-8");
+  message.text.transfer_encoding = Content_Transfer_Encoding::enc_base64;
+  message.text.embed.enable = true;
+  message.text.embed.filename = F("test.txt");
+  message.text.embed.type = esp_mail_smtp_embed_message_type_inline;
+
   server.on("/", HTTP_GET, handleRoot);
 
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -263,14 +311,56 @@ void setup(void) {
   sendEmail();
 }
 
+
+
 void loop(void) {
    pox.update();
 
-  
   if (millis() - previous > PERIOD) {
     heartRate = pox.getHeartRate();
     spo2 = pox.getSpO2(); 
     Serial.printf("Heart Rate: %.1f bpm | SpO2: %.1f%%\n", heartRate, spo2);
     previous = millis();
+  }
+  
+}
+
+void smtpCallback(SMTP_Status status)
+{
+  /* Print the current status */
+  Serial.println(status.info());
+
+  /* Print the sending result */
+  if (status.success())
+  {
+    // MailClient.printf used in the examples is for format printing via debug Serial port
+    // that works for all supported Arduino platform SDKs e.g. SAMD, ESP32 and ESP8266.
+    // In ESP8266 and ESP32, you can use Serial.printf directly.
+
+    Serial.println("----------------");
+    MailClient.printf("Message sent success: %d\n", status.completedCount());
+    MailClient.printf("Message sent failed: %d\n", status.failedCount());
+    Serial.println("----------------\n");
+
+    for (size_t i = 0; i < smtp.sendingResult.size(); i++)
+    {
+      /* Get the result item */
+      SMTP_Result result = smtp.sendingResult.getItem(i);
+
+      // In case, ESP32, ESP8266 and SAMD device, the timestamp get from result.timestamp should be valid if
+      // your device time was synched with NTP server.
+      // Other devices may show invalid timestamp as the device time was not set i.e. it will show Jan 1, 1970.
+      // You can call smtp.setSystemTime(xxx) to set device time manually. Where xxx is timestamp (seconds since Jan 1, 1970)
+
+      MailClient.printf("Message No: %d\n", i + 1);
+      MailClient.printf("Status: %s\n", result.completed ? "success" : "failed");
+      MailClient.printf("Date/Time: %s\n", MailClient.Time.getDateTimeString(result.timestamp, "%B %d, %Y %H:%M:%S").c_str());
+      MailClient.printf("Recipient: %s\n", result.recipients.c_str());
+      MailClient.printf("Subject: %s\n", result.subject.c_str());
+    }
+    Serial.println("----------------\n");
+
+    // You need to clear sending result as the memory usage will grow up.
+    smtp.sendingResult.clear();
   }
 }
