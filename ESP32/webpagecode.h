@@ -1,4 +1,3 @@
-
 const char homePage[] PROGMEM = (R"=====(
     <!DOCTYPE html>
 <html lang="en">
