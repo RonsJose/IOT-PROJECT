@@ -93,7 +93,6 @@ String getHumid(){
   }
 else 
 {
-  DHT.read(DHT11_PIN);
   Serial.print("  humi:");
   Serial.println(DHT.humidity);
   return String(DHT.humidity) + " %";
@@ -309,6 +308,7 @@ void setup(void) {
 
   server.begin();
   Serial.println("HTTP server started");
+  sendEmail();
 }
 
 
