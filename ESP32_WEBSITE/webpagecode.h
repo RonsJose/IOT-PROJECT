@@ -188,24 +188,58 @@ setInterval(function ( ) {
   xhttp.send();
 }, 1000 ) ;
 
-  let map;
+setInterval(function () {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      window.currentLat = parseFloat(this.responseText);
+    }
+  };
+  xhttp.open("GET", "/latitude", true);
+  xhttp.send();
+}, 3000);
+
+setInterval(function () {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      window.currentLng = parseFloat(this.responseText);
+    }
+  };
+  xhttp.open("GET", "/longitude", true);
+  xhttp.send();
+}, 3000);
+
+let map;
+let marker;
+let currentLat = 53.277556;
+let currentLng = 9.009750;
+
 async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
     map = new Map(document.getElementById("map"), {
-        center: { lat: 53.277556, lng: 9.009750 },
-        zoom: 10,
+        center: { lat: currentLat, lng: currentLng },
+        zoom: 15,
+        mapId:"",
     });
 
-    new google.maps.Marker({
-                position: { lat: 53.277556, lng: 9.009750 },
-                map: map,
-                title: "Current",
-            });
+    marker = new AdvancedMarkerElement({
+        position: { lat: currentLat, lng: currentLng },
+        map: map,
+        title: "Current location",
+    });
 }
-
 
 initMap();
 
+setInterval(() => {
+    if (!marker || !window.currentLat || !window.currentLng) return;
+
+    marker.position = { lat: window.currentLat, lng: window.currentLng };
+    map.setCenter({ lat: window.currentLat, lng: window.currentLng });
+}, 3000);
 </script>
 
 </html>
