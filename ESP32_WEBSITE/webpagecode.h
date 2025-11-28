@@ -121,7 +121,7 @@ flex-wrap: wrap;
            <div id= "map" class="item item-6"></div>
 
            <div class = "item item-7">
-           <img src="http://10.249.207.1:81/stream" alt="Camera feed" width="300">
+           <img id="camera" src="http:///%IP%:81/stream" alt="Camera feed" width="300">
            </div>
 
             <!-- prettier-ignore -->
@@ -185,6 +185,17 @@ setInterval(function ( ) {
     }
   };
   xhttp.open("GET", "/spO2", true);
+  xhttp.send();
+}, 1000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("camera").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/camera", true);
   xhttp.send();
 }, 1000 ) ;
 
