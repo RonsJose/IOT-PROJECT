@@ -12,7 +12,7 @@ AsyncWebServer server(80);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String Temp, Dist, Humidity, Blood, Heart, Long, Lat;
+String Temp, Dist, Humidity, Blood, Heart, Long, Lat, ip;
 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/distance";
@@ -22,6 +22,7 @@ const char *topic4 = "sensor/heartrate";
 const char *topic5 = "sensor/blood";
 const char *topic6 = "sensor/latitude";
 const char *topic7 = "sensor/longitude";
+const char *topic8 = "camera/ip";
 const int mqtt_port = 1883;
 
 void handleRoot(AsyncWebServerRequest *request) {
@@ -31,6 +32,7 @@ void handleRoot(AsyncWebServerRequest *request) {
   page.replace("%DISTANCE%", Dist.c_str());
   page.replace("%HEARTRATE%", Heart.c_str());
   page.replace("%SPO2%", Blood.c_str());
+  page.replace("%IP%",ip.c_str());
   request->send(200, "text/html", page);
 }
 
@@ -100,6 +102,13 @@ void callback(char *topic, byte *payload, unsigned int length) {
       Long += ((char)payload[i]);
     }
   }
+
+  if (strcmp(topic, topic8) == 0) {
+    ip = "";
+    for (int i = 0; i < length; i++) {
+      ip += ((char)payload[i]);
+    }
+  }
 }
 
 void setup() {
@@ -154,6 +163,10 @@ void setup() {
     request->send(200, "text/plain", Long.c_str());
   });
 
+  server.on("/camera", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", ip.c_str());
+  });
+
   server.onNotFound(handleNotFound);
 
   server.begin();
@@ -178,6 +191,7 @@ void loop() {
       client.subscribe(topic5);
       client.subscribe(topic6);
       client.subscribe(topic7);
+      client.subscribe(topic8);
 
       client.setCallback(callback);
     } else {
