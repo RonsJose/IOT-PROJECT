@@ -12,7 +12,7 @@ AsyncWebServer server(80);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String Temp, Dist, Humidity, Blood, Heart;
+String Temp, Dist, Humidity, Blood, Heart, Long, Lat;
 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/distance";
@@ -20,6 +20,8 @@ const char *topic2 = "sensor/temperature";
 const char *topic3 = "sensor/humidity";
 const char *topic4 = "sensor/heartrate";
 const char *topic5 = "sensor/blood";
+const char *topic6 = "sensor/latitude";
+const char *topic7 = "sensor/longitude";
 const int mqtt_port = 1883;
 
 void handleRoot(AsyncWebServerRequest *request) {
@@ -84,6 +86,20 @@ void callback(char *topic, byte *payload, unsigned int length) {
       Blood += ((char)payload[i]);
     }
   }
+
+  if (strcmp(topic, topic6) == 0) {
+    Lat = "";
+    for (int i = 0; i < length; i++) {
+      Lat += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic7) == 0) {
+    Long = "";
+    for (int i = 0; i < length; i++) {
+      Long += ((char)payload[i]);
+    }
+  }
 }
 
 void setup() {
@@ -125,8 +141,17 @@ void setup() {
   server.on("/heartRate", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", Heart.c_str());
   });
+
   server.on("/spO2", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", Blood.c_str());
+  });
+
+  server.on("/latitude", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", Lat.c_str());
+  });
+
+  server.on("/longitude", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", Long.c_str());
   });
 
   server.onNotFound(handleNotFound);
@@ -151,6 +176,8 @@ void loop() {
       client.subscribe(topic3);
       client.subscribe(topic4);
       client.subscribe(topic5);
+      client.subscribe(topic6);
+      client.subscribe(topic7);
 
       client.setCallback(callback);
     } else {

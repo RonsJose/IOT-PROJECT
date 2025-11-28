@@ -145,7 +145,7 @@ void loop() {
     client.publish(topic1, dst.c_str());
     client.publish(topic2, temp.c_str());
     client.publish(topic3, hum.c_str());
-    client.publish(topic4,lat.c_str());
-    client.publish(topic5,lon.c_str());
+    client.publish(topic4,lon.c_str());
+    client.publish(topic5,lat.c_str());
   }
 }
