@@ -25,7 +25,7 @@ String getHeartRate() {
     Serial.println("Failed to get reading from heart click heart");
     return "--";
   } else {
-    return String(heartRate, 1) + " bpm";
+    return String(heartRate, 1);
   }
 }
 
@@ -34,7 +34,7 @@ String getSpO2() {
     Serial.println("Failed to get reading from heart click spo2");
     return "--";
   } else {
-    return String(spo2, 1) + " %";
+    return String(spo2, 1);
   }
 }
 

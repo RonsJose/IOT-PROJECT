@@ -5,10 +5,14 @@
 #include <ESPmDNS.h>
 #include "webpagecode.h"
 #include <PubSubClient.h>
+#include "ThingSpeak.h"
 #include "cred.h"
 
 AsyncWebServer server(80);
 
+unsigned long channelNum = 3151130;
+#define UPLOAD_PERIOD 20000
+unsigned long uploadLast = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -32,7 +36,7 @@ void handleRoot(AsyncWebServerRequest *request) {
   page.replace("%DISTANCE%", Dist.c_str());
   page.replace("%HEARTRATE%", Heart.c_str());
   page.replace("%SPO2%", Blood.c_str());
-  page.replace("%IP%",ip.c_str());
+  page.replace("%IP%", ip.c_str());
   request->send(200, "text/html", page);
 }
 
@@ -116,9 +120,9 @@ void setup() {
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+  ThingSpeak.begin(espClient);
   Serial.println("");
 
-  // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -172,6 +176,7 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
 
+  client.setCallback(callback);
   client.setServer(mqtt_broker, mqtt_port);
 }
 
@@ -192,8 +197,6 @@ void loop() {
       client.subscribe(topic6);
       client.subscribe(topic7);
       client.subscribe(topic8);
-
-      client.setCallback(callback);
     } else {
       Serial.println("Failed to connect ");
       Serial.print(client.state());
@@ -201,4 +204,25 @@ void loop() {
     }
   }
   client.loop();
+  
+  unsigned long now = millis();
+  if (now - uploadLast >= UPLOAD_PERIOD) {
+
+    if (Temp == "" || Humidity == "" || Dist == "" || Heart == "" || Blood == "") {
+      Serial.println("skip");
+      uploadLast = now;
+      return;
+    }
+
+    ThingSpeak.setField(1, Temp.c_str());
+    ThingSpeak.setField(2, Humidity.c_str());
+    ThingSpeak.setField(3,Heart.c_str());
+    ThingSpeak.setField(4,Blood.c_str());
+    ThingSpeak.setField(5, Dist.c_str());
+
+    int result = ThingSpeak.writeFields(channelNum, thingspeak);
+    Serial.println(result);
+
+    uploadLast = now;
+  }
 }
