@@ -8,6 +8,7 @@ DFRobot_DHT11 DHT;
 #define DHT11_PIN 27
 const int TRIG_PIN = 25;
 const int ECHO_PIN = 14;
+const int buzzerPin = 33;
 long duration;
 float cms;
 #define GPSSerial Serial2
@@ -25,6 +26,9 @@ const char *topic3 = "sensor/humidity";
 const char *topic4 = "sensor/longitude";
 const char *topic5 = "sensor/latitude";
 const int mqtt_port = 1883;
+
+int minDistance = 5; 
+int maxDistance = 50;  
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -85,10 +89,28 @@ String getLongitude() {
   }
 }
 
+void buzzer()
+{
+  int beepDelay;
+  if (cms <= minDistance) {
+    beepDelay = 100; 
+  } else if (cms >= maxDistance) {
+    beepDelay = 1000; 
+  } else {
+    beepDelay = map(cms, minDistance, maxDistance, 100, 1000);
+  }
+
+  digitalWrite(buzzerPin, HIGH);
+  delay(50);  
+  digitalWrite(buzzerPin, LOW);
+  delay(beepDelay);
+}
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+  pinMode(buzzerPin, OUTPUT);
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -110,7 +132,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  while (!client.connected()) {
+  if (!client.connected()) {
     String client_id = "esp32-client-";
     client_id += String(WiFi.macAddress());
     Serial.println("Connecting to mqtt server\n");
@@ -148,4 +170,5 @@ void loop() {
     client.publish(topic4,lon.c_str());
     client.publish(topic5,lat.c_str());
   }
+  buzzer();
 }
