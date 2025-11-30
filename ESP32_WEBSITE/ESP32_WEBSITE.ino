@@ -182,7 +182,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  while (!client.connected()) {
+  if (!client.connected()) {
     String client_id = "esp32-client-";
     client_id += String(WiFi.macAddress());
     Serial.println("Connecting to mqtt server\n");
