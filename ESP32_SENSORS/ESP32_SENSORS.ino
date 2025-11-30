@@ -41,7 +41,7 @@ String getDis() {
     Serial.println("Failed to get reading from HCRS04");
     return "--";
   } else {
-    return String(cms) + " Cm";
+    return String(cms);
   }
 }
 
@@ -53,7 +53,7 @@ String getTemp() {
   } else {
     Serial.print("temp:");
     Serial.print(DHT.temperature);
-    return String(DHT.temperature) + " °C";
+    return String(DHT.temperature);
   }
 }
 
@@ -65,7 +65,7 @@ String getHumid() {
   } else {
     Serial.print("  humi:");
     Serial.println(DHT.humidity);
-    return String(DHT.humidity) + " %";
+    return String(DHT.humidity);
   }
 }
 

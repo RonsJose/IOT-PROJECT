@@ -82,6 +82,12 @@ flex-wrap: wrap;
   height: 500px;
   width: 300px;
 }
+
+.item iframe{
+  width=300;
+  height=260;
+  style="border:none;
+}
     </style>
 </head>
 <body>
@@ -96,32 +102,52 @@ flex-wrap: wrap;
            <div class="item item-1">
              <img src="https://uxwing.com/wp-content/themes/uxwing/download/medical-science-lab/high-temperature-icon.png" alt="temperature-icon" width="100">
              <h2>Temperature</h2>
-             <p id="temperature">%TEMPERATURE% </p>
+             <p id="temperature">%TEMPERATURE% °C</p>
            </div>
            <div class="item item-2">
             <img src="https://static.vecteezy.com/system/resources/thumbnails/024/984/141/small_2x/3d-weather-forecast-icon-raindrops-air-humidity-percentage-3d-illustration-png.png" alt="humidity-icon" width="100">
             <h2>Humidity</h2>
-            <p id="humidity">%HUMIDITY% </p>
+            <p id="humidity">%HUMIDITY% %</p>
            </div>
            <div class="item item-3">
             <img src="https://cdn-icons-png.flaticon.com/512/335/335648.png" alt="Distance Img" width="100"> 
             <h2>Distance</h2>
-            <p id="distance">%DISTANCE% </p>
+            <p id="distance">%DISTANCE% cm </p>
            </div>
            <div class="item item-4">
             <img src="https://cdn.freebiesupply.com/logos/large/2x/heart-logo-png-transparent.png" alt="Heart IMG" width="100"> 
             <h2>Heart Rate</h2>
-            <p id="heartRate">%HEARTRATE% </p>
+            <p id="heartRate">%HEARTRATE% bpm</p>
            </div>
             <div class="item item-5">
             <img src="https://m.media-amazon.com/images/S/abs-image-upload-na/0/AmazonStores/A21TJRUUN4KGV/bba883408bb96efa3e99895f04d52fac.w300.h300.png" alt="Blood Oxygen IMG" width="100"> 
             <h2>SpO2</h2>
-            <p id="spO2">%SPO2% </p>
+            <p id="spO2">%SPO2% %</p>
            </div>
            <div id= "map" class="item item-6"></div>
 
            <div class = "item item-7">
-           <img id="camera" src="http:///%IP%:81/stream" alt="Camera feed" width="300">
+           <img id="camera" src="%IP%" alt="Camera feed" width="300">
+           </div>
+
+           <div class = "item item-8">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-9">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-10">
+          <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-11">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-12">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
            </div>
 
             <!-- prettier-ignore -->
@@ -137,7 +163,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("temperature").innerHTML = this.responseText;
+      document.getElementById("temperature").innerHTML = this.responseText+ " °C";
     }
   };
   xhttp.open("GET", "/temperature", true);
@@ -148,7 +174,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("humidity").innerHTML = this.responseText;
+      document.getElementById("humidity").innerHTML = this.responseText+ " %";
     }
   };
   xhttp.open("GET", "/humidity", true);
@@ -159,7 +185,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("distance").innerHTML = this.responseText;
+      document.getElementById("distance").innerHTML = this.responseText +" cm";
     }
   };
   xhttp.open("GET", "/distance", true);
@@ -170,7 +196,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("heartRate").innerHTML = this.responseText;
+      document.getElementById("heartRate").innerHTML = this.responseText + " bpm";
     }
   };
   xhttp.open("GET", "/heartRate", true);
@@ -181,7 +207,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("spO2").innerHTML = this.responseText;
+      document.getElementById("spO2").innerHTML = this.responseText + " %";
     }
   };
   xhttp.open("GET", "/spO2", true);
@@ -192,7 +218,7 @@ setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("camera").innerHTML = this.responseText;
+      document.getElementById("camera").src = "http://" + this.responseText + ":81/stream";
     }
   };
   xhttp.open("GET", "/camera", true);
@@ -233,7 +259,7 @@ async function initMap() {
     map = new Map(document.getElementById("map"), {
         center: { lat: currentLat, lng: currentLng },
         zoom: 15,
-        mapId:"",
+        mapId:"9040f5107606389e1876cc8e",
     });
 
     marker = new AdvancedMarkerElement({
