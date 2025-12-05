@@ -16,7 +16,7 @@ unsigned long uploadLast = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String Temp, Dist, Humidity, Blood, Heart, Long, Lat, ip;
+String Temp, Dist, Humidity, Blood, Heart, Long, Lat, ip, alcohol;
 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/distance";
@@ -27,6 +27,7 @@ const char *topic5 = "sensor/blood";
 const char *topic6 = "sensor/latitude";
 const char *topic7 = "sensor/longitude";
 const char *topic8 = "camera/ip";
+const char *topic9 = "sensor/alcohol";
 const int mqtt_port = 1883;
 
 void handleRoot(AsyncWebServerRequest *request) {
@@ -113,6 +114,14 @@ void callback(char *topic, byte *payload, unsigned int length) {
       ip += ((char)payload[i]);
     }
   }
+
+  if(strmp(topic,topic9)==0){
+    alcohol="";
+    for(int i=0;i<length;i++)
+    {
+      alcohol+=((char)payload[i]);
+    }
+  }
 }
 
 void setup() {
@@ -197,6 +206,7 @@ void loop() {
       client.subscribe(topic6);
       client.subscribe(topic7);
       client.subscribe(topic8);
+      client.subscribe(topic9);
     } else {
       Serial.println("Failed to connect ");
       Serial.print(client.state());
