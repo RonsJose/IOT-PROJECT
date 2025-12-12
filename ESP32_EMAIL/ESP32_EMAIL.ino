@@ -68,6 +68,8 @@ void loop() {
 
   if (al == "Alcohol level: High") {
     sendMail("Alert", al);
+    lock();
+    LockCheck=true;
   }
 
   if (!mfrc522.PICC_IsNewCardPresent()) {
