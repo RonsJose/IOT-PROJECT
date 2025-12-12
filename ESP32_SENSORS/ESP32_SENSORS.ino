@@ -109,7 +109,12 @@ String getAlcohol()
   Serial.print("  Approx BAC (g/dL): ");
   Serial.println(BAC_gdL, 3);
 
-  return String(ratio);
+  if (ratio > 0.95) {
+    return ("Alcohol level: Clean air");
+  } else if (ratio > 0.85) {
+    return ("Alcohol level: Low");
+  } else {
+    return ("Alcohol level: High");}
 }
 
 void setup() {

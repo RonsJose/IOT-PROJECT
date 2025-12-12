@@ -127,8 +127,10 @@ flex-wrap: wrap;
            <div id= "map" class="item item-6"></div>
 
            <div class = "item item-7">
+
            <img id="camera" src="%IP%" alt="Camera feed" width="300">
            </div>
+
 
            <div class = "item item-8">
            <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
@@ -149,8 +151,13 @@ flex-wrap: wrap;
            <div class = "item item-12">
            <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
            </div>
-
-            <!-- prettier-ignore -->
+           
+            <div class="item item-13">
+            <h2>Alcohol content</h2>
+            <p id="alcohol"> %ALCOHOL% %</p>
+           </div>
+           
+            <!-- prettier-ignore -->  <!-- googles import library loader -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "", v: "weekly"});</script>
         </div>
@@ -222,6 +229,17 @@ setInterval(function ( ) {
     }
   };
   xhttp.open("GET", "/camera", true);
+  xhttp.send();
+}, 1000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("alcohol").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/alcohol", true);
   xhttp.send();
 }, 1000 ) ;
 
