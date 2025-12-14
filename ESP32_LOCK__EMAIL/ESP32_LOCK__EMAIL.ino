@@ -11,6 +11,7 @@
 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/alcohol";
+const char *topic2 = "gps/address";
 const int mqtt_port = 1883;
 
 Servo motor;
@@ -21,7 +22,7 @@ PubSubClient client(espClient);
 
 const int pin = 14;
 bool LockCheck = true;
-String al;
+String al,ad;
 
 void callback(char *topic, byte *payload, unsigned int length) {
 
@@ -29,6 +30,13 @@ void callback(char *topic, byte *payload, unsigned int length) {
     al = "";
     for (int i = 0; i < length; i++) {
       al += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic2) == 0) {
+    ad = "";
+    for (int i = 0; i < length; i++) {
+      ad += ((char)payload[i]);
     }
   }
 }
@@ -58,6 +66,7 @@ void loop() {
     if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
       Serial.println("Connected to MQTT server");
       client.subscribe(topic1);
+      client.subscribe(topic2);
     } else {
       Serial.println("Failed to connect ");
       Serial.print(client.state());
@@ -67,7 +76,8 @@ void loop() {
   client.loop();
 
   if (al == "Alcohol level: High") {
-    sendMail("Alert", al);
+    String emailBody = al + "\nLocation: " + ad;
+    sendMail("Alert", emailBody);
     lock();
     LockCheck=true;
   }
