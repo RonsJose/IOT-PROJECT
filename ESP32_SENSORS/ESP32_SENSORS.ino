@@ -3,6 +3,8 @@
 #include "cred.h"
 #include <DFRobot_DHT11.h>
 #include <Adafruit_GPS.h>
+#include <HTTPClient.h>
+#include <Arduino_JSON.h>
 
 DFRobot_DHT11 DHT;
 #define DHT11_PIN 27
@@ -14,8 +16,8 @@ float cms;
 #define GPSSerial Serial2
 Adafruit_GPS GPS(&GPSSerial);
 #define GPSECHO false
-int mq3Pin = 32;  
-float R0 = 0;    
+int mq3Pin = 32;
+float R0 = 0;
 
 uint32_t timer = millis();
 unsigned long previous = 0;
@@ -28,10 +30,11 @@ const char *topic3 = "sensor/humidity";
 const char *topic4 = "sensor/longitude";
 const char *topic5 = "sensor/latitude";
 const char *topic6 = "sensor/alcohol";
+const char *topic7 = "gps/address";
 const int mqtt_port = 1883;
 
-int minDistance = 5; 
-int maxDistance = 50;  
+int minDistance = 5;
+int maxDistance = 50;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -78,7 +81,7 @@ String getHumid() {
 
 String getLatitude() {
   if (GPS.fix) {
-    return String(GPS.latitudeDegrees,6);
+    return String(GPS.latitudeDegrees, 6);
   } else {
     return "0";
   }
@@ -86,14 +89,13 @@ String getLatitude() {
 
 String getLongitude() {
   if (GPS.fix) {
-    return String(GPS.longitudeDegrees,6);
+    return String(GPS.longitudeDegrees, 6);
   } else {
     return "0";
   }
 }
 
-String getAlcohol()
-{
+String getAlcohol() {
   int sensorValue = analogRead(mq3Pin);
   float sensor_volt = sensorValue / 4095.0 * 3.3;
   float RS_gas = (3.3 - sensor_volt) / sensor_volt;
@@ -120,22 +122,61 @@ String getAlcohol()
   } else {
     return ("Alcohol level: High");
   }
-  
-void buzzer()
-{
+}
+
+void buzzer() {
   int beepDelay;
   if (cms <= minDistance) {
-    beepDelay = 100; 
+    beepDelay = 100;
   } else if (cms >= maxDistance) {
-    beepDelay = 1000; 
+    beepDelay = 1000;
   } else {
     beepDelay = map(cms, minDistance, maxDistance, 100, 1000);
   }
 
   digitalWrite(buzzerPin, HIGH);
-  delay(50);  
+  delay(50);
   digitalWrite(buzzerPin, LOW);
   delay(beepDelay);
+}
+
+String getAddress() {
+  HTTPClient http;
+
+  String link = "https://maps.googleapis.com/maps/api/geocode/json?";
+  link += "latlng=";
+  link += String(GPS.latitudeDegrees, 6);
+  link += ",";
+  link += String(GPS.longitudeDegrees, 6);
+  link += "&key=";
+  link += google_api;
+
+  http.begin(link);
+
+  int httpCode = http.GET();
+  if (httpCode > 0) {
+    String json = http.getString();
+
+    JSONVar jsonVar = JSON.parse(json);
+
+    if (JSON.typeof(jsonVar["results"]) == "array" &&
+        jsonVar["results"].length() > 0 &&
+        JSON.typeof(jsonVar["results"][0]["formatted_address"]) == "string") {
+
+      const char* addr = (const char*)jsonVar["results"][0]["formatted_address"];
+      Serial.println(addr);
+      http.end();
+      return String(addr); 
+
+    } else {
+      http.end();
+      return "Can't find an address";
+    }
+
+  } else {
+    http.end();
+    return "HTTP request failed";
+  }
 }
 
 void setup() {
@@ -159,12 +200,12 @@ void setup() {
   delay(1000);
 
   float RS_sum = 0;
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     int val = analogRead(mq3Pin);
     float volt = val / 4095.0 * 3.3;
     float RS = (3.3 - volt) / volt;
     RS_sum += RS;
-    delay(50); 
+    delay(50);
   }
   R0 = RS_sum / 100.0;
 
@@ -207,12 +248,14 @@ void loop() {
     String lat = getLatitude();
     String lon = getLongitude();
     String al = getAlcohol();
+    String ad = getAddress();
     client.publish(topic1, dst.c_str());
     client.publish(topic2, temp.c_str());
     client.publish(topic3, hum.c_str());
-    client.publish(topic4,lon.c_str());
-    client.publish(topic5,lat.c_str());
-    client.publish(topic6,al.c_str());
+    client.publish(topic4, lon.c_str());
+    client.publish(topic5, lat.c_str());
+    client.publish(topic6, al.c_str());
+    client.publish(topic7,ad.c_str());
   }
   buzzer();
 }
