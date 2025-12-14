@@ -88,6 +88,10 @@ flex-wrap: wrap;
   height=260;
   style="border:none;
 }
+
+.item item-9 p{
+  text-align: center; 
+}
     </style>
 </head>
 <body>
@@ -131,31 +135,37 @@ flex-wrap: wrap;
            <img id="camera" src="%IP%" alt="Camera feed" width="300">
            </div>
 
-
-           <div class = "item item-8">
-           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
-           </div>
-
-           <div class = "item item-9">
-           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
-           </div>
-
-           <div class = "item item-10">
-          <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
-           </div>
-
-           <div class = "item item-11">
-           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
-           </div>
-
-           <div class = "item item-12">
-           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
-           </div>
-           
-            <div class="item item-13">
+           <div class="item item-8">
             <h2>Alcohol content</h2>
             <p id="alcohol"> %ALCOHOL% %</p>
            </div>
+
+           <div class="item item-9">
+            <h2>Street Address</h2>
+            <p id="address"> %ADDRESS% </p>
+           </div>
+
+           <div class = "item item-10">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-11">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-12">
+          <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-13">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+
+           <div class = "item item-14">
+           <iframe src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+           </div>
+           
+            
            
             <!-- prettier-ignore -->  <!-- googles import library loader -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
@@ -240,6 +250,17 @@ setInterval(function ( ) {
     }
   };
   xhttp.open("GET", "/alcohol", true);
+  xhttp.send();
+}, 1000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("address").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/address", true);
   xhttp.send();
 }, 1000 ) ;
 
