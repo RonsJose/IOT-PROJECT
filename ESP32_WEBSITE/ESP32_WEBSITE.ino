@@ -16,7 +16,7 @@ unsigned long uploadLast = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String Temp, Dist, Humidity, Blood, Heart, Long, Lat, ip, alcohol;
+String Temp, Dist, Humidity, Blood, Heart, Long, Lat, ip, alcohol, address;
 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/distance";
@@ -28,6 +28,7 @@ const char *topic6 = "sensor/latitude";
 const char *topic7 = "sensor/longitude";
 const char *topic8 = "camera/ip";
 const char *topic9 = "sensor/alcohol";
+const char *topic10 = "gps/address";
 const int mqtt_port = 1883;
 
 void handleRoot(AsyncWebServerRequest *request) {
@@ -39,6 +40,7 @@ void handleRoot(AsyncWebServerRequest *request) {
   page.replace("%SPO2%", Blood.c_str());
   page.replace("%IP%", ip.c_str());
   page.replace("%ALCOHOL%", alcohol.c_str());
+  page.replace("%ADDRESS%",address.c_str());
   request->send(200, "text/html", page);
 }
 
@@ -122,6 +124,13 @@ void callback(char *topic, byte *payload, unsigned int length) {
       alcohol += ((char)payload[i]);
     }
   }
+
+  if (strcmp(topic, topic10) == 0) {
+    address = "";
+    for (int i = 0; i < length; i++) {
+      address += ((char)payload[i]);
+    }
+  }
 }
 
 void setup() {
@@ -183,6 +192,11 @@ void setup() {
   server.on("/alcohol", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", alcohol.c_str());
   });
+
+  server.on("/address", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", address.c_str());
+  });
+
   server.onNotFound(handleNotFound);
 
   server.begin();
@@ -210,6 +224,7 @@ void loop() {
       client.subscribe(topic7);
       client.subscribe(topic8);
       client.subscribe(topic9);
+      client.subscribe(topic10);
     } else {
       Serial.println("Failed to connect ");
       Serial.print(client.state());
