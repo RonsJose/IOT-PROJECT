@@ -88,6 +88,10 @@ flex-wrap: wrap;
   height=260;
   style="border:none;
 }
+
+.item item-9 p{
+  text-align: center; 
+}
     </style>
 </head>
 <body>
@@ -138,7 +142,7 @@ flex-wrap: wrap;
 
            <div class="item item-9">
             <h2>Street Address</h2>
-            <p id="address"> %ADDRESS% %</p>
+            <p id="address"> %ADDRESS% </p>
            </div>
 
            <div class = "item item-10">
