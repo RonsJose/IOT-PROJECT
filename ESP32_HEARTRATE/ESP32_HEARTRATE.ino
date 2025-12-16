@@ -1,9 +1,17 @@
+/*
+This code is for my IoT project the Smart System Integration for Automobiles
+This is run on an ESP32
+This one is resposible for the heartrate sensor
+*/
+
+//Libraries
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "cred.h"
 #include <Wire.h>
 #include "MAX30100_PulseOximeter.h"
 
+//Variables
 #define PERIOD 1000
 PulseOximeter pox;
 int previous1 = 0;
@@ -20,6 +28,7 @@ const int mqtt_port = 1883;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+//Returns string heartrate
 String getHeartRate() {
   if (isnan(heartRate)) {
     Serial.println("Failed to get reading from heart click heart");
@@ -29,6 +38,7 @@ String getHeartRate() {
   }
 }
 
+//Returns string spo2
 String getSpO2() {
   if (isnan(spo2)) {
     Serial.println("Failed to get reading from heart click spo2");
@@ -63,6 +73,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //MQTT
   while (!client.connected()) {
     String client_id = "esp32-client-";
     client_id += String(WiFi.macAddress());
@@ -77,7 +88,7 @@ void loop() {
   }
   client.loop();
 
-  pox.update();
+  pox.update();//Update sensor readings
 
   if (millis() - previous > PERIOD) {
     heartRate = pox.getHeartRate();
@@ -86,6 +97,7 @@ void loop() {
     previous = millis();
   }
 
+  //Upload to broker
   unsigned long now = millis();
   if (now - previous1 > stop) {
     previous1 = now;

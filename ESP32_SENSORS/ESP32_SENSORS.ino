@@ -1,3 +1,12 @@
+/*
+This code is for my IoT project the Smart System Integration for Automobiles
+This is run on an ESP32
+It gets distance, temperature and humidity gps location, alcohol
+Sends all the data to a MQTT broker
+Uses a buzzer for range detection
+*/
+
+//Libraries
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "cred.h"
@@ -6,6 +15,7 @@
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
 
+//Instances and pins and variables
 DFRobot_DHT11 DHT;
 #define DHT11_PIN 27
 const int TRIG_PIN = 25;
@@ -23,6 +33,7 @@ uint32_t timer = millis();
 unsigned long previous = 0;
 const long stop = 2000;
 
+//  MQTT config
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/distance";
 const char *topic2 = "sensor/temperature";
@@ -36,9 +47,11 @@ const int mqtt_port = 1883;
 int minDistance = 5;
 int maxDistance = 50;
 
+//Creates the TCP client and and MQTT client and tells it to use espClient for internet
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+//Gets distance reading using hcsr04
 String getDis() {
   digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(5);
@@ -55,6 +68,7 @@ String getDis() {
   }
 }
 
+//Gets temperature reading using DHT11
 String getTemp() {
   DHT.read(DHT11_PIN);
   if (isnan(DHT.temperature)) {
@@ -67,6 +81,7 @@ String getTemp() {
   }
 }
 
+//Gets humidity reading using DHT11
 String getHumid() {
   DHT.read(DHT11_PIN);
   if (isnan(DHT.humidity)) {
@@ -79,6 +94,7 @@ String getHumid() {
   }
 }
 
+//Parses the latitude from NMEA string from gps sensor
 String getLatitude() {
   if (GPS.fix) {
     return String(GPS.latitudeDegrees, 6);
@@ -87,6 +103,7 @@ String getLatitude() {
   }
 }
 
+//Parses the longititude from NMEA string from gps sensor
 String getLongitude() {
   if (GPS.fix) {
     return String(GPS.longitudeDegrees, 6);
@@ -95,6 +112,7 @@ String getLongitude() {
   }
 }
 
+//Gets the current alcohol reading from sensor and compares it to first reading to get current reading / inital reading
 String getAlcohol() {
   int sensorValue = analogRead(mq3Pin);
   float sensor_volt = sensorValue / 4095.0 * 3.3;
@@ -124,6 +142,7 @@ String getAlcohol() {
   }
 }
 
+//Controller buzzer speed depending on distance 
 void buzzer() {
   int beepDelay;
   if (cms <= minDistance) {
@@ -140,6 +159,7 @@ void buzzer() {
   delay(beepDelay);
 }
 
+//Uses google api to get the street address from gps latitude and longtitude
 String getAddress() {
   HTTPClient http;
 
@@ -159,14 +179,12 @@ String getAddress() {
 
     JSONVar jsonVar = JSON.parse(json);
 
-    if (JSON.typeof(jsonVar["results"]) == "array" &&
-        jsonVar["results"].length() > 0 &&
-        JSON.typeof(jsonVar["results"][0]["formatted_address"]) == "string") {
+    if (JSON.typeof(jsonVar["results"]) == "array" && jsonVar["results"].length() > 0 && JSON.typeof(jsonVar["results"][0]["formatted_address"]) == "string") {
 
-      const char* addr = (const char*)jsonVar["results"][0]["formatted_address"];
+      const char *addr = (const char *)jsonVar["results"][0]["formatted_address"];
       Serial.println(addr);
       http.end();
-      return String(addr); 
+      return String(addr);
 
     } else {
       http.end();
@@ -181,10 +199,13 @@ String getAddress() {
 
 void setup() {
   // put your setup code here, to run once:
+  //IO pins
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(buzzerPin, OUTPUT);
+  //Starts serial transmition
   Serial.begin(115200);
+  //Wifi begin
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -192,6 +213,7 @@ void setup() {
   }
   Serial.println("Connected to the network");
 
+  //GPS begin
   Serial2.begin(9600, SERIAL_8N1, 16, 17);
   GPS.begin(9600);
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -199,6 +221,7 @@ void setup() {
   GPS.sendCommand(PGCMD_ANTENNA);
   delay(1000);
 
+  //Gets inital reading for alcohol sensor
   float RS_sum = 0;
   for (int i = 0; i < 100; i++) {
     int val = analogRead(mq3Pin);
@@ -209,12 +232,15 @@ void setup() {
   }
   R0 = RS_sum / 100.0;
 
+  //Connects to mqtt broker
   client.setServer(mqtt_broker, mqtt_port);
 }
 
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+  //Connects to mqtt server
   if (!client.connected()) {
     String client_id = "esp32-client-";
     client_id += String(WiFi.macAddress());
@@ -229,6 +255,7 @@ void loop() {
   }
   client.loop();
 
+  //Updates NMEA
   while (GPSSerial.available()) {
     char c = GPS.read();
     if (GPS.newNMEAreceived()) {
@@ -238,6 +265,7 @@ void loop() {
     }
   }
 
+  //Sends data to mqtt broker
   unsigned long now = millis();
   if (now - previous > stop) {
     previous = now;
@@ -255,7 +283,8 @@ void loop() {
     client.publish(topic4, lon.c_str());
     client.publish(topic5, lat.c_str());
     client.publish(topic6, al.c_str());
-    client.publish(topic7,ad.c_str());
+    client.publish(topic7, ad.c_str());
   }
+  //Runs buzzer depending on the distance 
   buzzer();
 }

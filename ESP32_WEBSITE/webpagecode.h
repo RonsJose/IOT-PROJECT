@@ -167,7 +167,7 @@ flex-wrap: wrap;
            
             
            
-            <!-- prettier-ignore -->  <!-- googles import library loader -->
+            <!-- prettier-ignore -->  <!-- googles new modular loader -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "", v: "weekly"});</script>
         </div>
@@ -176,16 +176,18 @@ flex-wrap: wrap;
 </body>
 
 <script>
+
+//AJAX requests to update data without refreshing the page
 setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+  xhttp.onreadystatechange = function() {//When it changes
+    if (this.readyState == 4 && this.status == 200) { //If it was successful
       document.getElementById("temperature").innerHTML = this.responseText+ " °C";
     }
   };
-  xhttp.open("GET", "/temperature", true);
-  xhttp.send();
-}, 5000 ) ;
+  xhttp.open("GET", "/temperature", true); //prepares the GET request
+  xhttp.send(); //Sends the request
+}, 5000 ) ;//Time to wait before it goes again
 
 setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
@@ -286,16 +288,17 @@ setInterval(function () {
   xhttp.send();
 }, 3000);
 
+//Updates the map using the gps sensor
 let map;
 let marker;
 let currentLat = 53.277556;
 let currentLng = 9.009750;
 
-async function initMap() {
+async function initMap() { //Loads the libraries
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    map = new Map(document.getElementById("map"), {
+    map = new Map(document.getElementById("map"), { //Creates the map 
         center: { lat: currentLat, lng: currentLng },
         zoom: 15,
         mapId:"9040f5107606389e1876cc8e",
@@ -310,6 +313,7 @@ async function initMap() {
 
 initMap();
 
+//Updates marker position 
 setInterval(() => {
     if (!marker || !window.currentLat || !window.currentLng) return;
 

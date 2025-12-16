@@ -1,3 +1,11 @@
+/*
+This code is for my IoT project the Smart System Integration for Automobiles
+This is run on an ESP32
+This one controls a servo motor locking system depending on what rfid tag you use on the rfid reader
+It also locks and sends an email depending on the values recieved from the mqtt broker
+*/
+
+//Libraries
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "cred.h"
@@ -6,14 +14,17 @@
 #include <MFRC522.h>
 #include <ESP32Servo.h>
 
+//Pins
 #define SS_PIN 5
 #define RST_PIN 0
 
+//MQTT config
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/alcohol";
 const char *topic2 = "gps/address";
 const int mqtt_port = 1883;
 
+//Variables 
 Servo motor;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
@@ -24,6 +35,7 @@ const int pin = 14;
 bool LockCheck = true;
 String al,ad;
 
+//Called whenever a topic receives data and updates the variable for that topic
 void callback(char *topic, byte *payload, unsigned int length) {
 
   if (strcmp(topic, topic1) == 0) {
@@ -75,10 +87,11 @@ void loop() {
   }
   client.loop();
 
+  //Checks for high alcohol level
   if (al == "Alcohol level: High") {
     String emailBody = al + "\nLocation: " + ad;
-    sendMail("Alert", emailBody);
-    lock();
+    sendMail("Alert", emailBody);//Sends email
+    lock();//Locks 
     LockCheck=true;
   }
 
@@ -91,7 +104,7 @@ void loop() {
   }
 
   Serial.print("Card ID: ");
-  String cardID = "";
+  String cardID = ""; //Reads UID
   for (byte i = 0; i < mfrc522.uid.size; i++) {
     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
     Serial.print(mfrc522.uid.uidByte[i], HEX);
@@ -100,10 +113,12 @@ void loop() {
   }
   Serial.println();
 
-  cardID.toUpperCase();
+  cardID.toUpperCase();//Converts to uppercase and compares to check if its  the same
   if (cardID.substring(1) == "B7 C3 B0 01") {
     Serial.println("Access granted");
     Serial.println();
+
+    //If its the same depending on the lockCheck lock or unlock
     if (LockCheck) {
       unlock();
       LockCheck = false;
@@ -112,14 +127,16 @@ void loop() {
       LockCheck = true;
     }
     delay(2000);
-  } else {
+  } else { //If not the right key, lock the door
     Serial.println("Access denied. Unauthorized card");
     lock();
     LockCheck = true;
     delay(2000);
+  
   }
 }
 
+//Send email using mailgun api
 void sendMail(String subject, String body) {
   if (WiFi.status() != WL_CONNECTED) return;
 
@@ -149,6 +166,7 @@ void sendMail(String subject, String body) {
   http.end();
 }
 
+//Lock and unlock using servo motor
 void unlock() {
   Serial.println("Unlocking");
   motor.write(90);
