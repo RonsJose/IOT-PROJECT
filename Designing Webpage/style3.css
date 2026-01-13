@@ -117,3 +117,21 @@
     height: 550px;
     width: 99%;
 }
+
+#Address {
+    width: 30%;
+    margin: 10px auto;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+#Address h2 {
+    font-size: 22px;
+    margin-bottom: 30px;
+    opacity: 0.85;
+    text-align: center;
+}
