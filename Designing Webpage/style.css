@@ -21,7 +21,7 @@
     width: 100%;
     background:
         linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExejB6NjBueDJsZjdvbmRoYTgwZmFteDJqZnpmZG5kMWN1Z3NvNHE1diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5k00E7cigvvqnBYDdP/giphy.gif");
+        url("https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHp4bzN3bmRtbWo3OWpvd2ZwMXRkY3JyOWlwc3hwZHh4c3JreTEyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT4uQF7h39mlsF5czK/giphy.gif");
     background-size: cover;
     background-position: center;
     display: flex;
@@ -94,7 +94,7 @@
     margin-top: 50px;
     padding: 15px 30px; 
     color: whitesmoke;
-    background-color: rgba(94, 2, 5);
+    background-color: rgba(22, 51, 97);
     border: none; 
     font-size: 18px;  
     min-width: 200px;
