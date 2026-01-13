@@ -1,0 +1,137 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+#wrapper {
+    width: 100%;
+    margin: auto;
+}
+
+.clearfix::after {
+    clear: both;
+    display: block;
+    content: "";
+}
+
+#Background {
+    min-height: 100vh;
+    width: 100%;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+
+#Menu img {
+    width: 50px;
+}
+
+#Menu {
+    position: absolute;
+    top: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    min-height: 80px;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 0 32px;
+    gap: 20px;
+}
+
+
+#logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 22px;
+}
+
+#Menu a {
+    text-decoration: none;
+    color: gray;
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+
+#Menu a:hover {
+    color: white;
+    font-size: 19px;
+}
+
+#logo,
+.item,
+.nav-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+#logo {
+    gap: 12px;
+    color: white;
+    font-size: 22px;
+}
+
+
+.item {
+    justify-content: center;
+    gap: 28px;
+}
+
+
+.nav-right {
+    justify-content: flex-end;
+}
+
+#container {
+    width: 70%;
+    margin: 10px auto;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+#container h2 {
+    font-size: 22px;
+    margin-bottom: 30px;
+    opacity: 0.85;
+}
+
+#map {
+    height: 550px;
+    width: 99%;
+}
+
+#Address {
+    width: 30%;
+    margin: 10px auto;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+#Address h2 {
+    font-size: 22px;
+    margin-bottom: 30px;
+    opacity: 0.85;
+    text-align: center;
+}
