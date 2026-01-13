@@ -65,29 +65,23 @@
                 </div>
             </div>
 
-            <div class="container">
-                <h2>Health Monitor</h2>
+            <div class="graphs-panel">
+                <h2>Live Sensor Data</h2>
 
-                <div class="container-grid">
-                    <div class="container-tile heartrate">
-                        <span class="icon">♥️</span>
-                        <h3>104<span>bpm</span></h3>
-                        <p>HeartRate</p>
-                    </div>
-
-                    <div class="container-tile blood">
-                        <span class="icon">🩸</span>
-                        <h3>95<span>%</span></h3>
-                        <p>Blood Oxygen</p>
-                    </div>
-
-                    <div class="container-tile alcohol">
-                        <span class="icon">🍺</span>
-                        <h3>25<span>%</span></h3>
-                        <p>Alcohol Level</p>
-                    </div>
+                <div class="graphs-grid">
+                    <iframe
+                        src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+                    <iframe
+                        src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+                    <iframe
+                        src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+                    <iframe
+                        src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+                    <iframe
+                        src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
                 </div>
             </div>
+
 
         </div>
     </div>
