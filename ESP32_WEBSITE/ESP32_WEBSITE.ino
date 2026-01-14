@@ -12,6 +12,7 @@ It hosts the async webserver and sends the sensor data to thingspeak
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
 #include "home.h"
+#include "vehicle.h"
 #include <PubSubClient.h>
 #include "ThingSpeak.h"
 #include "cred.h"
@@ -56,6 +57,11 @@ void handleRoot(AsyncWebServerRequest *request) {
   page.replace("%IP%", ip.c_str());
   page.replace("%ALCOHOL%", alcohol.c_str());
   page.replace("%ADDRESS%",address.c_str());
+  request->send(200, "text/html", page);
+}
+
+void handleVehicle(AsyncWebServerRequest *request) {
+  String page = String(vehiclePage);
   request->send(200, "text/html", page);
 }
 
@@ -174,8 +180,9 @@ void setup() {
     Serial.println("MDNS responder started");
   }
 
-  //Loads the main webpage
+  //Loads the different webpages
   server.on("/", HTTP_GET, handleRoot);
+  server.on("/vehicle", HTTP_GET, handleVehicle);
 
   //HTTP GET endpoints that send back the current value of whatever sensor that is requested
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
