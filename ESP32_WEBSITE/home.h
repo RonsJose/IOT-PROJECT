@@ -116,44 +116,107 @@ const char homePage[] PROGMEM = (R"=====(
     cursor: pointer;
     transform: translateY(-8px);
 }
+
+@media (max-width: 768px) {
+
+    #Center {
+        top: 15%;
+        padding: 20px;
+    }
+
+    #buttons {
+        flex-direction: column;
+        top: 115%;
+        width: 100%;
+    }
+
+    .button {
+        width: 90%;
+        max-width: 300px;
+        font-size: 16px;
+        margin-top: 0px;
+    }
+
+    #Nav p {
+        font-size: 22px;
+    }
+
+    #Nav img {
+        width: 40px;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+    }
+
+    #wrapper {
+        position: relative;
+        z-index: 2;
+        min-height: 100svh;
+    }
+
+    #content {
+        min-height: 120svh;
+    }
+
+    #Background {
+        position: fixed;
+        inset: 0;
+        height: 100svh;
+        z-index: 0;
+
+        background:
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url("https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHp4bzN3bmRtbWo3OWpvd2ZwMXRkY3JyOWlwc3hwZHh4c3JreTEyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT4uQF7h39mlsF5czK/giphy.gif");
+
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+}
     </style>
 </head>
 
 <body>
-    <div id="wrapper">
-        <div id="Background">
+    <div id="Background"></div>
 
-            <div id="Nav">
-                <img src="https://www.nicepng.com/png/full/89-891434_white-car-icon-png-car-icon-green-png.png">
-                <p>SSIA</p>
-            </div>
+<div id="wrapper">
+    <div id="content">
 
-            <div id="Center">
-                <h1>Your Vehicle, Smarter Than Ever</h1>
-                <p>A unified system of vehicle intelligence, safety, and real-time monitoring. Fast, reliable, and
-                    always connected.</p>
-
-                <div id="buttons">
-                    <a href="/vehicle" target="_self">
-                        <button class="button">Vehicle Condition</button>
-                    </a>
-
-                    <a href="/location" target="_self">
-                        <button class="button">Location</button>
-                    </a>
-
-                    <a href="/health" target="_self">
-                        <button class="button">Health</button>
-                    </a>
-
-                    <a href="/graphs" target="_self">
-                        <button class="button">Graphs</button>
-                    </a>
-                </div>
-            </div>
-
+        <div id="Nav">
+            <img src="https://www.nicepng.com/png/full/89-891434_white-car-icon-png-car-icon-green-png.png">
+            <p>SSIA</p>
         </div>
+
+        <div id="Center">
+            <h1>Your Vehicle, Smarter Than Ever</h1>
+            <p>A unified system of vehicle intelligence, safety, and real-time monitoring. Fast, reliable, and
+            always connected.</p>
+
+            <div id="buttons">
+                <a href="/vehicle" target="_self">
+                    <button class="button">Vehicle Condition</button>
+                </a>
+
+                <a href="/location" target="_self">
+                    <button class="button">Location</button>
+                </a>
+
+                <a href="/health" target="_self">
+                    <button class="button">Health</button>
+                </a>
+
+                <a href="/graphs" target="_self">
+                    <button class="button">Graphs</button>
+                </a>
+            </div>
+        </div>
+
     </div>
+</div>
 </body>
 
 </html>

@@ -170,8 +170,50 @@ const char healthPage[] PROGMEM = (R"=====(
 .blood { box-shadow: inset 0 0 40px rgba(80,160,255,.08); }
 .alcohol { box-shadow: inset 0 0 40px rgba(255,200,80,.08); }
 
+@media (max-width: 900px) {
+  #Menu {
+    width: 95%;
+    padding: 12px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: auto;
+  }
+
+  #logo {
+    font-size: 18px;
+  }
+
+  #Menu img {
+    width: 36px;
+  }
+
+  .item a {
+    font-size: 14px;
+  }
+
+  .item {
+    justify-content: center;
+  }
+
+  .container,
+  #container,
+  #Address {
+    width: 95%;
+    padding: 20px;
+  }
+
+  #map {
+    height: 300px;
+  }
+
+  .container-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+}
 </style>
-</head>snsa
+</head>
 
 <body>
     <div id="wrapper">

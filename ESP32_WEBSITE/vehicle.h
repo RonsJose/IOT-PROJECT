@@ -205,6 +205,47 @@ const char vehiclePage[] PROGMEM = (R"=====(
   pointer-events: none;
 }
 
+@media (max-width: 900px) {
+  #Menu {
+    width: 95%;
+    padding: 12px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: auto;
+  }
+
+  #logo {
+    font-size: 18px;
+  }
+
+  #Menu img {
+    width: 36px;
+  }
+
+  .item a {
+    font-size: 14px;
+  }
+
+  .item {
+    justify-content: center;
+  }
+
+  .container,
+  #container{
+    width: 95%;
+    padding: 20px;
+  }
+
+  .container-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .Camera {
+    width: 240px;
+    height: 240px;
+  }
+}
     </style>
 </head>
 

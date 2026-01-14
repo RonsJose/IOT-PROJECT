@@ -145,6 +145,49 @@ const char locationPage[] PROGMEM = (R"=====(
     opacity: 0.85;
     text-align: center;
 }
+
+@media (max-width: 900px) {
+    #Menu {
+        width: 95%;
+        padding: 12px 16px;
+        gap: 10px;
+        flex-wrap: wrap;
+        min-height: auto;
+    }
+
+    #logo {
+        font-size: 18px;
+    }
+
+    #Menu img {
+        width: 36px;
+    }
+
+    .item a {
+        font-size: 14px;
+    }
+
+    .item {
+        justify-content: center;
+    }
+
+    .container,
+    #container,
+    #Address {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #map {
+        height: 300px;
+    }
+
+    .container-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+}
 </style>
 </head>
 
@@ -205,6 +248,7 @@ const char locationPage[] PROGMEM = (R"=====(
 
             <div id="Address">
                 <h2>Street Address</h2>
+                <h3 id="address">%ADDRESS%</h3>
             </div>
 
         </div>
@@ -212,6 +256,17 @@ const char locationPage[] PROGMEM = (R"=====(
 </body>
 
 <script>
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("address").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/address", true);
+    xhttp.send();
+  }, 1000);
+
 
   setInterval(function () {
     var xhttp = new XMLHttpRequest();
@@ -234,7 +289,7 @@ const char locationPage[] PROGMEM = (R"=====(
     xhttp.open("GET", "/longitude", true);
     xhttp.send();
   }, 3000);
-  
+
      //Updates the map using the gps sensor
   let map;
   let marker;

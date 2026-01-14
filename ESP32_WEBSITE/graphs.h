@@ -137,6 +137,49 @@ const char graphsPage[] PROGMEM = (R"=====(
         inset 0 0 0 1px rgba(255,255,255,0.06),
         0 20px 60px rgba(0,0,0,.8);
 }
+
+@media (max-width: 900px) {
+    #Menu {
+        width: 95%;
+        padding: 12px 16px;
+        gap: 10px;
+        flex-wrap: wrap;
+        min-height: auto;
+    }
+
+    #logo {
+        font-size: 18px;
+    }
+
+    #Menu img {
+        width: 36px;
+    }
+
+    .item a {
+        font-size: 14px;
+    }
+
+    .item {
+        justify-content: center;
+    }
+
+    .container,
+    #container,
+    .graphs-panel {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #map {
+        height: 300px;
+    }
+
+    .container-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+}
 </style>
 </head>
 
