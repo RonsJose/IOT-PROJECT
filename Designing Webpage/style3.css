@@ -135,3 +135,57 @@
     opacity: 0.85;
     text-align: center;
 }
+
+.graphs-grid {
+    grid-template-columns: 1fr;
+}
+
+.graphs-grid iframe {
+    height: 240px;
+}
+
+
+
+
+@media (max-width: 900px) {
+    #Menu {
+        width: 95%;
+        padding: 12px 16px;
+        gap: 10px;
+        flex-wrap: wrap;
+        min-height: auto;
+    }
+
+    #logo {
+        font-size: 18px;
+    }
+
+    #Menu img {
+        width: 36px;
+    }
+
+    .item a {
+        font-size: 14px;
+    }
+
+    .item {
+        justify-content: center;
+    }
+
+    .container,
+    #container,
+    #Address {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #map {
+        height: 300px;
+    }
+
+    .container-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+}

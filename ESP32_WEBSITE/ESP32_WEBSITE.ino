@@ -11,7 +11,11 @@ It hosts the async webserver and sends the sensor data to thingspeak
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
-#include "webpagecode.h"
+#include "home.h"
+#include "vehicle.h"
+#include "location.h"
+#include "health.h"
+#include "graphs.h"
 #include <PubSubClient.h>
 #include "ThingSpeak.h"
 #include "cred.h"
@@ -22,7 +26,7 @@ AsyncWebServer server(80);
 //Thingspeak Config
 unsigned long channelNum = 3151130;
 #define UPLOAD_PERIOD 20000
-unsigned long uploadLast = 0;#
+unsigned long uploadLast = 0;
 
 //MQTT client
 WiFiClient espClient;
@@ -45,17 +49,37 @@ const char *topic9 = "sensor/alcohol";
 const char *topic10 = "gps/address";
 const int mqtt_port = 1883;
 
-//Loads template and replaces placeholder values 
+//Loads template and replaces placeholder values
 void handleRoot(AsyncWebServerRequest *request) {
   String page = String(homePage);
+  request->send(200, "text/html", page);
+}
+
+void handleVehicle(AsyncWebServerRequest *request) {
+  String page = String(vehiclePage);
   page.replace("%TEMPERATURE%", Temp.c_str());
   page.replace("%HUMIDITY%", Humidity.c_str());
   page.replace("%DISTANCE%", Dist.c_str());
+  page.replace("%IP%", ip.c_str());
+  request->send(200, "text/html", page);
+}
+
+void handleLocation(AsyncWebServerRequest *request) {
+  String page = String(locationPage);
+  page.replace("%ADDRESS%", address.c_str());
+  request->send(200, "text/html", page);
+}
+
+void handleHealth(AsyncWebServerRequest *request) {
+  String page = String(healthPage);
   page.replace("%HEARTRATE%", Heart.c_str());
   page.replace("%SPO2%", Blood.c_str());
-  page.replace("%IP%", ip.c_str());
   page.replace("%ALCOHOL%", alcohol.c_str());
-  page.replace("%ADDRESS%",address.c_str());
+  request->send(200, "text/html", page);
+}
+
+void handleGraphs(AsyncWebServerRequest *request) {
+  String page = String(graphsPage);
   request->send(200, "text/html", page);
 }
 
@@ -168,14 +192,18 @@ void setup() {
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  
+
   //MDNS for when at home for wifi
   if (MDNS.begin("iot")) {
     Serial.println("MDNS responder started");
   }
 
-  //Loads the main webpage
+  //Loads the different webpages
   server.on("/", HTTP_GET, handleRoot);
+  server.on("/vehicle", HTTP_GET, handleVehicle);
+  server.on("/location", HTTP_GET, handleLocation);
+  server.on("/health", HTTP_GET, handleHealth);
+  server.on("/graphs", HTTP_GET, handleGraphs);
 
   //HTTP GET endpoints that send back the current value of whatever sensor that is requested
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -232,7 +260,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //Connects to mqtt broker and subscribes to all the topics 
+  //Connects to mqtt broker and subscribes to all the topics
   if (!client.connected()) {
     String client_id = "esp32-client-";
     client_id += String(WiFi.macAddress());
@@ -262,7 +290,7 @@ void loop() {
   unsigned long now = millis();
   if (now - uploadLast >= UPLOAD_PERIOD) {
 
-    if (Temp == "" || Humidity == "" || Dist == "" || Heart == "" || Blood == "") { //Skips uploading if one of the variables is empty to avoid errors
+    if (Temp == "" || Humidity == "" || Dist == "" || Heart == "" || Blood == "") {  //Skips uploading if one of the variables is empty to avoid errors
       Serial.println("skip");
       uploadLast = now;
       return;
