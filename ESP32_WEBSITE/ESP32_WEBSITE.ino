@@ -11,7 +11,7 @@ It hosts the async webserver and sends the sensor data to thingspeak
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
-#include "webpagecode.h"
+#include "webpage.h"
 #include <PubSubClient.h>
 #include "ThingSpeak.h"
 #include "cred.h"
@@ -22,7 +22,7 @@ AsyncWebServer server(80);
 //Thingspeak Config
 unsigned long channelNum = 3151130;
 #define UPLOAD_PERIOD 20000
-unsigned long uploadLast = 0;#
+unsigned long uploadLast = 0;
 
 //MQTT client
 WiFiClient espClient;
