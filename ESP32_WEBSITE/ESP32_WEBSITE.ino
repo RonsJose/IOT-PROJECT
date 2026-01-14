@@ -14,6 +14,8 @@ It hosts the async webserver and sends the sensor data to thingspeak
 #include "home.h"
 #include "vehicle.h"
 #include "location.h"
+#include "health.h"
+#include "graphs.h"
 #include <PubSubClient.h>
 #include "ThingSpeak.h"
 #include "cred.h"
@@ -73,6 +75,11 @@ void handleLocation(AsyncWebServerRequest *request) {
 
 void handleHealth(AsyncWebServerRequest *request) {
   String page = String(healthPage);
+  request->send(200, "text/html", page);
+}
+
+void handleGraphs(AsyncWebServerRequest *request) {
+  String page = String(GraphsPage);
   request->send(200, "text/html", page);
 }
 
@@ -196,6 +203,7 @@ void setup() {
   server.on("/vehicle", HTTP_GET, handleVehicle);
   server.on("/location".HTTP_GET, handleLocation);
   server.on("/health".HTTP_GET, handleHealth);
+  server.on("/graphs".HTTP_GET, handleGraphs);
 
   //HTTP GET endpoints that send back the current value of whatever sensor that is requested
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
