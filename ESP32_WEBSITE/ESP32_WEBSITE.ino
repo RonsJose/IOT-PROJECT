@@ -52,12 +52,6 @@ const int mqtt_port = 1883;
 //Loads template and replaces placeholder values
 void handleRoot(AsyncWebServerRequest *request) {
   String page = String(homePage);
-
-  page.replace("%HEARTRATE%", Heart.c_str());
-  page.replace("%SPO2%", Blood.c_str());
-  page.replace("%IP%", ip.c_str());
-  page.replace("%ALCOHOL%", alcohol.c_str());
-  page.replace("%ADDRESS%", address.c_str());
   request->send(200, "text/html", page);
 }
 
@@ -72,11 +66,15 @@ void handleVehicle(AsyncWebServerRequest *request) {
 
 void handleLocation(AsyncWebServerRequest *request) {
   String page = String(locationPage);
+  page.replace("%ADDRESS%", address.c_str());
   request->send(200, "text/html", page);
 }
 
 void handleHealth(AsyncWebServerRequest *request) {
   String page = String(healthPage);
+  page.replace("%HEARTRATE%", Heart.c_str());
+  page.replace("%SPO2%", Blood.c_str());
+  page.replace("%ALCOHOL%", alcohol.c_str());
   request->send(200, "text/html", page);
 }
 

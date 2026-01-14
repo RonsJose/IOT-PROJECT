@@ -212,6 +212,29 @@ const char locationPage[] PROGMEM = (R"=====(
 </body>
 
 <script>
+
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        window.currentLat = parseFloat(this.responseText);
+      }
+    };
+    xhttp.open("GET", "/latitude", true);
+    xhttp.send();
+  }, 3000);
+
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        window.currentLng = parseFloat(this.responseText);
+      }
+    };
+    xhttp.open("GET", "/longitude", true);
+    xhttp.send();
+  }, 3000);
+  
      //Updates the map using the gps sensor
   let map;
   let marker;
