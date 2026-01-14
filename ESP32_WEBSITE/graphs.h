@@ -152,32 +152,32 @@ const char graphsPage[] PROGMEM = (R"=====(
                 </div>
 
                 <div class="item">
-                    <a href="vehicle.html" target="_self">
+                    <a href="/vehicle" target="_self">
                         Vehicle
                     </a>
 
                 </div>
 
                 <div class="item">
-                    <a href="location.html" target="_self">
+                    <a href="/location" target="_self">
                         Location
                     </a>
                 </div>
 
                 <div class="item">
-                    <a href="health.html" target="_self">
+                    <a href="/health" target="_self">
                         Health
                     </a>
                 </div>
 
                 <div class="item">
-                    <a href="graphs.html" target="_self">
+                    <a href="/graphs" target="_self">
                         Graphs
                     </a>
                 </div>
 
                 <div class="item">
-                    <a href="main.html" target="_self">
+                    <a href="/" target="_self">
                         Home
                     </a>
                 </div>
