@@ -79,7 +79,7 @@ void handleHealth(AsyncWebServerRequest *request) {
 }
 
 void handleGraphs(AsyncWebServerRequest *request) {
-  String page = String(GraphsPage);
+  String page = String(graphsPage);
   request->send(200, "text/html", page);
 }
 
@@ -201,9 +201,9 @@ void setup() {
   //Loads the different webpages
   server.on("/", HTTP_GET, handleRoot);
   server.on("/vehicle", HTTP_GET, handleVehicle);
-  server.on("/location".HTTP_GET, handleLocation);
-  server.on("/health".HTTP_GET, handleHealth);
-  server.on("/graphs".HTTP_GET, handleGraphs);
+  server.on("/location",HTTP_GET, handleLocation);
+  server.on("/health",HTTP_GET, handleHealth);
+  server.on("/graphs",HTTP_GET, handleGraphs);
 
   //HTTP GET endpoints that send back the current value of whatever sensor that is requested
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
