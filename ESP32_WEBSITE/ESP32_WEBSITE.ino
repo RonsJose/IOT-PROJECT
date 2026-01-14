@@ -52,9 +52,7 @@ const int mqtt_port = 1883;
 //Loads template and replaces placeholder values
 void handleRoot(AsyncWebServerRequest *request) {
   String page = String(homePage);
-  page.replace("%TEMPERATURE%", Temp.c_str());
-  page.replace("%HUMIDITY%", Humidity.c_str());
-  page.replace("%DISTANCE%", Dist.c_str());
+
   page.replace("%HEARTRATE%", Heart.c_str());
   page.replace("%SPO2%", Blood.c_str());
   page.replace("%IP%", ip.c_str());
@@ -65,6 +63,10 @@ void handleRoot(AsyncWebServerRequest *request) {
 
 void handleVehicle(AsyncWebServerRequest *request) {
   String page = String(vehiclePage);
+  page.replace("%TEMPERATURE%", Temp.c_str());
+  page.replace("%HUMIDITY%", Humidity.c_str());
+  page.replace("%DISTANCE%", Dist.c_str());
+  page.replace("%IP%", ip.c_str());
   request->send(200, "text/html", page);
 }
 
@@ -201,9 +203,9 @@ void setup() {
   //Loads the different webpages
   server.on("/", HTTP_GET, handleRoot);
   server.on("/vehicle", HTTP_GET, handleVehicle);
-  server.on("/location",HTTP_GET, handleLocation);
-  server.on("/health",HTTP_GET, handleHealth);
-  server.on("/graphs",HTTP_GET, handleGraphs);
+  server.on("/location", HTTP_GET, handleLocation);
+  server.on("/health", HTTP_GET, handleHealth);
+  server.on("/graphs", HTTP_GET, handleGraphs);
 
   //HTTP GET endpoints that send back the current value of whatever sensor that is requested
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {

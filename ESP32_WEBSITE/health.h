@@ -171,7 +171,7 @@ const char healthPage[] PROGMEM = (R"=====(
 .alcohol { box-shadow: inset 0 0 40px rgba(255,200,80,.08); }
 
 </style>
-</head>
+</head>snsa
 
 <body>
     <div id="wrapper">

@@ -271,19 +271,19 @@ const char vehiclePage[] PROGMEM = (R"=====(
                 <div class="container-grid">
                     <div class="container-tile temp">
                         <span class="icon">🌡</span>
-                        <h3>23<span>°C</span></h3>
+                        <h3 id="temperature">%TEMPERATURE%<span>°C</span></h3>
                         <p>Temperature</p>
                     </div>
 
                     <div class="container-tile humidity">
                         <span class="icon">💧</span>
-                        <h3>64<span>%</span></h3>
+                        <h3 id="humidity">%HUMIDITY%<span>%</span></h3>
                         <p>Humidity</p>
                     </div>
 
                     <div class="container-tile distance">
                         <span class="icon">📏</span>
-                        <h3>25<span>cm</span></h3>
+                        <h3 id="distance">%DISTANCE%<span>cm</span></h3>
                         <p>Distance</p>
                     </div>
                 </div>
@@ -296,6 +296,53 @@ const char vehiclePage[] PROGMEM = (R"=====(
         </div>
     </div>
 </body>
+
+<script>
+//AJAX requests to update data without refreshing the page
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {//When it changes
+    if (this.readyState == 4 && this.status == 200) { //If it was successful
+      document.getElementById("temperature").innerHTML = this.responseText+ "<span>°C</span>";
+    }
+  };
+  xhttp.open("GET", "/temperature", true); //prepares the GET request
+  xhttp.send(); //Sends the request
+}, 5000 ) ;//Time to wait before it goes again
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("humidity").innerHTML = this.responseText+ "<span>%</span>";
+    }
+  };
+  xhttp.open("GET", "/humidity", true);
+  xhttp.send();
+}, 5000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("distance").innerHTML = this.responseText +"<span>cm</span>";
+    }
+  };
+  xhttp.open("GET", "/distance", true);
+  xhttp.send();
+}, 5000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("camera").src = "http://" + this.responseText + ":81/stream";
+    }
+  };
+  xhttp.open("GET", "/camera", true);
+  xhttp.send();
+}, 1000 ) ;
+</script>
 
 </html>
       )=====");
