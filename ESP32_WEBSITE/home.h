@@ -134,19 +134,19 @@ const char homePage[] PROGMEM = (R"=====(
                     always connected.</p>
 
                 <div id="buttons">
-                    <a href="vehicle.html" target="_self">
+                    <a href="/vehicle" target="_self">
                         <button class="button">Vehicle Condition</button>
                     </a>
 
-                    <a href="location.html" target="_self">
+                    <a href="/location" target="_self">
                         <button class="button">Location</button>
                     </a>
 
-                    <a href="health.html" target="_self">
+                    <a href="/health" target="_self">
                         <button class="button">Health</button>
                     </a>
 
-                    <a href="graphs.html" target="_self">
+                    <a href="/graphs" target="_self">
                         <button class="button">Graphs</button>
                     </a>
                 </div>
