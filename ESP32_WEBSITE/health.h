@@ -236,19 +236,19 @@ const char healthPage[] PROGMEM = (R"=====(
                 <div class="container-grid">
                     <div class="container-tile heartrate">
                         <span class="icon">♥️</span>
-                        <h3>104<span>bpm</span></h3>
+                        <h3 id="heartRate">%HEARTRATE%<span>bpm</span></h3>
                         <p>HeartRate</p>
                     </div>
 
                     <div class="container-tile blood">
                         <span class="icon">🩸</span>
-                        <h3>95<span>%</span></h3>
+                        <h3 id="spO2">%SPO2%<span>%</span></h3>
                         <p>Blood Oxygen</p>
                     </div>
 
                     <div class="container-tile alcohol">
                         <span class="icon">🍺</span>
-                        <h3>25<span>%</span></h3>
+                        <h3 id="alcohol">%ALCOHOL%<span>%</span></h3>
                         <p>Alcohol Level</p>
                     </div>
                 </div>
@@ -257,6 +257,42 @@ const char healthPage[] PROGMEM = (R"=====(
         </div>
     </div>
 </body>
+
+<script>
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("alcohol").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/alcohol", true);
+    xhttp.send();
+  }, 1000);
+
+    setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("heartRate").innerHTML = this.responseText + "<span>bpm</span>";
+      }
+    };
+    xhttp.open("GET", "/heartRate", true);
+    xhttp.send();
+  }, 1000);
+
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("spO2").innerHTML = this.responseText + "<span>%</span>";
+      }
+    };
+    xhttp.open("GET", "/spO2", true);
+    xhttp.send();
+  }, 1000);
+
+</script>
 
 </html>
       )=====");
