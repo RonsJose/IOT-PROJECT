@@ -189,3 +189,11 @@
     }
 
 }
+
+
+@media (max-height: 1600px) {
+    #Background {
+        justify-content: flex-start;
+        padding-top: 120px;
+    }
+}
