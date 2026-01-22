@@ -1,2 +1,9 @@
 \cred.h
 \settings.json
+__pycache__/
+*.pyc
+venv/
+website/backend/venv/
+.env
+.vscode/
+.idea
