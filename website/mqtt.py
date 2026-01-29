@@ -7,7 +7,10 @@ load_dotenv()
 mqtt_port=9002
 TOPICS = ["sensor/temperature",
           "sensor/distance",
-          "sensor/humidity"]
+          "sensor/humidity",
+          "sensor/blood",
+          "sensor/heartrate",
+          "sensor/alcohol"]
 
 def mqtt_start(socketio):
     client = mqtt.Client(transport="websockets")
