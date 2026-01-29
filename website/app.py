@@ -1,6 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
+from dotenv import load_dotenv 
+from flask_socketio import SocketIO
+import threading 
+import os
+from mqtt import mqtt_start
+
 
 app = Flask(__name__)
+socketio = SocketIO(app)
+
+threading.Thread(target=mqtt_start,args=(socketio,), daemon=True).start()
 
 @app.route("/")
 def home():
@@ -22,9 +31,5 @@ def location():
 def graphs():
     return render_template("graphs.html")
 
-@app.route("/api/test")
-def api_test():
-    return {"status": "ok"}
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000)
