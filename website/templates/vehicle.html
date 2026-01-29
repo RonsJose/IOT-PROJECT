@@ -78,13 +78,13 @@
 
                     <div class="container-tile humidity">
                         <span class="icon">💧</span>
-                        <h3>64<span>%</span></h3>
+                        <h3 id="humidity">64<span>%</span></h3>
                         <p>Humidity</p>
                     </div>
 
                     <div class="container-tile distance">
                         <span class="icon">📏</span>
-                        <h3>25<span>cm</span></h3>
+                        <h3 id="distance">25<span>cm</span></h3>
                         <p>Distance</p>
                     </div>
                 </div>
@@ -101,8 +101,19 @@
     const socket = io();
     socket.on("mqtt_message", (message) => {
         const value = message.payload;
+        const topic = message.topic;
 
+    if(topic=== "sensor/temperature")
+    {
         document.getElementById("temperature").innerHTML = value.toString() + "<span>°C</span>";
+    }else if (topic=== "sensor/distance")
+    {
+        document.getElementById("distance").innerHTML = value.toString() + "<span>cm</span>";
+    }else if (topic === "sensor/humidity")
+    {
+        document.getElementById("humidity").innerHTML = value.toString() + "<span>%</span>";
+    }
+        
     });
 </script>
 

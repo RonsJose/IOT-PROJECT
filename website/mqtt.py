@@ -5,7 +5,9 @@ import os
 
 load_dotenv()
 mqtt_port=9002
-TOPICS = "sensor/temperature"
+TOPICS = ["sensor/temperature",
+          "sensor/distance",
+          "sensor/humidity"]
 
 def mqtt_start(socketio):
     client = mqtt.Client(transport="websockets")
@@ -13,7 +15,9 @@ def mqtt_start(socketio):
 
     def on_connect(client,userdata,flags,rc):
         print("Connected to broker: ",rc)
-        client.subscribe(TOPICS)
+        for topic in TOPICS:
+            client.subscribe(topic)
+            print("Subbed to ",topic)
 
     def on_message(client,userdata,message):
         payload = message.payload.decode()
