@@ -10,7 +10,10 @@ TOPICS = ["sensor/temperature",
           "sensor/humidity",
           "sensor/blood",
           "sensor/heartrate",
-          "sensor/alcohol"]
+          "sensor/alcohol",
+          "sensor/longitude",
+          "sensor/latitude",
+          "gps/address"]
 
 def mqtt_start(socketio):
     client = mqtt.Client(transport="websockets")
