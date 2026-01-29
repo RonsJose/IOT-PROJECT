@@ -4,6 +4,6 @@ __pycache__/
 *.pyc
 venv/
 website/backend/venv/
-.env
+.env*
 .vscode/
 .idea

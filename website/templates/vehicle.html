@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSIA</title>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
     <link rel="stylesheet" href="/static/css/style2.css">
 </head>
 
@@ -97,42 +97,13 @@
         </div>
     </div>
 </body>
-<script>  
-    const host = "wss://mqtt.ssia.online:9002"  
-    const options = {
-      keepalive: 60,
-      clean: true,
-      reconnectPeriod: 1000,
-      connectTimeout: 30 * 1000,
-      will: {
-        topic: 'WillMsg',
-        payload: 'Connection Closed abnormally..!',
-        qos: 0,
-        retain: false
-      },
-    }
-    console.log('Connecting mqtt client')
-    const client = mqtt.connect(host, options)
-    client.on('error', (err) => {
-      console.log('Connection error: ', err)
-      client.end()
-    }) 
-    
-    client.on('connect',() =>{
-      console.log("Connected to broker");
-      client.subscribe('sensor/temperature', { qos: 0 })
-    })
+<script>
+    const socket = io();
+    socket.on("mqtt_message", (message) => {
+        const value = message.payload;
 
-    client.on('reconnect', () => {
-      console.log('Reconnecting...')
-    })
-
-    client.on('message', (topic, message, packet) => {
-    console.log(`Received Message: ${message.toString()} On topic: ${topic}`)
-    const temp = document.getElementById("temperature");
-    if (temp){
-      temp.innerHTML=message.toString() + "<span>°C</span>";
-    }
-})
+        document.getElementById("temperature").innerHTML = value.toString() + "<span>°C</span>";
+    });
 </script>
+
 </html>
