@@ -22,9 +22,15 @@ It also locks and sends an email depending on the values recieved from the mqtt 
 const char *mqtt_broker = "165.22.122.17";
 const char *topic1 = "sensor/alcohol";
 const char *topic2 = "gps/address";
+const char *topic3 = "sensor/door";
+const char *topic4 = "sensor/lock";
 const int mqtt_port = 1883;
 
-//Variables 
+uint32_t timer = millis();
+unsigned long previous = 0;
+const long stop = 2000;
+
+//Variables
 Servo motor;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
@@ -33,7 +39,7 @@ PubSubClient client(espClient);
 
 const int pin = 14;
 bool LockCheck = true;
-String al,ad;
+String al, ad, lockStat;
 
 //Called whenever a topic receives data and updates the variable for that topic
 void callback(char *topic, byte *payload, unsigned int length) {
@@ -50,6 +56,21 @@ void callback(char *topic, byte *payload, unsigned int length) {
     for (int i = 0; i < length; i++) {
       ad += ((char)payload[i]);
     }
+  }
+
+  if (strcmp(topic, topic4) == 0) {
+    lockStat = "";
+    for (int i = 0; i < length; i++) {
+      lockStat += ((char)payload[i]);
+    }
+  }
+}
+
+String getlk() {
+  if (LockCheck) {
+    return "Closed";
+  } else {
+    return "Open";
   }
 }
 
@@ -79,6 +100,7 @@ void loop() {
       Serial.println("Connected to MQTT server");
       client.subscribe(topic1);
       client.subscribe(topic2);
+      client.subscribe(topic4);
     } else {
       Serial.println("Failed to connect ");
       Serial.print(client.state());
@@ -90,49 +112,63 @@ void loop() {
   //Checks for high alcohol level
   if (al == "Alcohol level: High") {
     String emailBody = al + "\nLocation: " + ad;
-    sendMail("Alert", emailBody);//Sends email
-    lock();//Locks 
-    LockCheck=true;
+    sendMail("Alert", emailBody);  //Sends email
+    lock();                        //Locks
+    LockCheck = true;
   }
 
-  if (!mfrc522.PICC_IsNewCardPresent()) {
-    return;
-  }
-
-  if (!mfrc522.PICC_ReadCardSerial()) {
-    return;
-  }
-
-  Serial.print("Card ID: ");
-  String cardID = ""; //Reads UID
-  for (byte i = 0; i < mfrc522.uid.size; i++) {
-    Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    Serial.print(mfrc522.uid.uidByte[i], HEX);
-    cardID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-    cardID.concat(String(mfrc522.uid.uidByte[i], HEX));
-  }
-  Serial.println();
-
-  cardID.toUpperCase();//Converts to uppercase and compares to check if its  the same
-  if (cardID.substring(1) == "B7 C3 B0 01") {
-    Serial.println("Access granted");
-    Serial.println();
-
-    //If its the same depending on the lockCheck lock or unlock
-    if (LockCheck) {
-      unlock();
-      LockCheck = false;
-    } else {
-      lock();
-      LockCheck = true;
-    }
-    delay(2000);
-  } else { //If not the right key, lock the door
-    Serial.println("Access denied. Unauthorized card");
+  if (lockStat == "Open") {
+    unlock();
+    LockCheck = false;
+    lockStat = "";
+    Serial.println("Unlock Website button\n");
+  } else if (lockStat == "Closed") {
     lock();
     LockCheck = true;
-    delay(2000);
-  
+    lockStat = "";
+    Serial.println("Lock Website button\n");
+  }
+
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+
+    Serial.print("Card ID: ");
+    String cardID = "";  //Reads UID
+    for (byte i = 0; i < mfrc522.uid.size; i++) {
+      Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+      Serial.print(mfrc522.uid.uidByte[i], HEX);
+      cardID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+      cardID.concat(String(mfrc522.uid.uidByte[i], HEX));
+    }
+    Serial.println();
+
+    cardID.toUpperCase();  //Converts to uppercase and compares to check if its  the same
+    if (cardID.substring(1) == "B7 C3 B0 01") {
+      Serial.println("Access granted");
+      Serial.println();
+
+      //If its the same depending on the lockCheck lock or unlock
+      if (LockCheck) {
+        unlock();
+        LockCheck = false;
+      } else {
+        lock();
+        LockCheck = true;
+      }
+      delay(2000);
+    } else {  //If not the right key, lock the door
+      Serial.println("Access denied. Unauthorized card");
+      lock();
+      LockCheck = true;
+      delay(2000);
+    }
+  }
+
+  unsigned long now = millis();
+  if (now - previous > stop) {
+    previous = now;
+
+    String lk = getlk();
+    client.publish(topic3, lk.c_str());
   }
 }
 
