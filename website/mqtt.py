@@ -51,6 +51,6 @@ def lock(payload):
     client.tls_set()
     client.connect(os.getenv("BROKER"), mqtt_port, 60)
     client.loop_start()
-    client.publish("sensor/door", message)
+    client.publish("sensor/lock", message)
     client.loop_stop()
 

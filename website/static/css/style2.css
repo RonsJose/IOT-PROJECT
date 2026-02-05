@@ -187,6 +187,8 @@ button {
   font-size: 12px;
   text-transform: uppercase;
   opacity: .6;
+  width: 50%;
+  height: 150%;
 }
 
 .temp {
