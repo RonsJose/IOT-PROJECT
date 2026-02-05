@@ -37,3 +37,20 @@ def mqtt_start(socketio):
     client.tls_set()
     client.connect(os.getenv("BROKER"), mqtt_port, 60)
     client.loop_forever()
+
+def lock(payload):
+    message = payload
+    client = mqtt.Client(transport="websockets")
+    client.username_pw_set(os.getenv("USER_MQTT"),os.getenv("PASSWORD"))
+
+    def on_connect(client,userdata,flags,rc):
+        print("Connected to broker: ",rc)
+    
+    client.on_connect = on_connect
+    
+    client.tls_set()
+    client.connect(os.getenv("BROKER"), mqtt_port, 60)
+    client.loop_start()
+    client.publish("sensor/door", message)
+    client.loop_stop()
+
