@@ -119,6 +119,10 @@
     {
         document.getElementById("humidity").innerHTML = value.toString() + "<span>%</span>";
     }
+    else if (topic == "sensor/door")
+    {
+        document.getElementById("door").innerHTML = "<span>" + value.toString() + "</span>";
+    }
         
     });
 </script>
