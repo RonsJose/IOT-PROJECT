@@ -87,6 +87,24 @@
                         <h3 id="distance">25<span>cm</span></h3>
                         <p>Distance</p>
                     </div>
+
+                    <div class="container-tile door">
+                        <span class="icon">🔐</span>
+                        <h3 id="door"><span>Closed</span></h3>
+                        <p>Lock</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container controls">
+                <h2>Door Controls</h2>
+                <div class="container-grid control">
+                    <div class="container-tile">
+                        <button onclick="setLock('Open')">Open</button>
+                    </div>
+                    <div class="container-tile">
+                        <button onclick="setLock('Closed')">Close</button>
+                    </div>
                 </div>
             </div>
 
@@ -98,22 +116,40 @@
     </div>
 </body>
 <script>
+
+    function setLock(value) {
+        fetch("/set_lock", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "value=" + value
+        })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Lock response:", data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+
     const socket = io();
     socket.on("mqtt_message", (message) => {
         const value = message.payload;
         const topic = message.topic;
 
-    if(topic=== "sensor/temperature")
-    {
-        document.getElementById("temperature").innerHTML = value.toString() + "<span>°C</span>";
-    }else if (topic=== "sensor/distance")
-    {
-        document.getElementById("distance").innerHTML = value.toString() + "<span>cm</span>";
-    }else if (topic === "sensor/humidity")
-    {
-        document.getElementById("humidity").innerHTML = value.toString() + "<span>%</span>";
-    }
-        
+        if (topic === "sensor/temperature") {
+            document.getElementById("temperature").innerHTML = value.toString() + "<span>°C</span>";
+        } else if (topic === "sensor/distance") {
+            document.getElementById("distance").innerHTML = value.toString() + "<span>cm</span>";
+        } else if (topic === "sensor/humidity") {
+            document.getElementById("humidity").innerHTML = value.toString() + "<span>%</span>";
+        }
+        else if (topic == "sensor/door") {
+            document.getElementById("door").innerHTML = "<span>" + value.toString() + "</span>";
+        }
+
     });
 </script>
 

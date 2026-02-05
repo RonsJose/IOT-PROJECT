@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask_socketio import SocketIO
 import threading 
 import os
-from mqtt import mqtt_start
+from mqtt import mqtt_start,lock
 
 
 app = Flask(__name__)
@@ -30,6 +30,17 @@ def location():
 @app.route("/graphs")
 def graphs():
     return render_template("graphs.html")
+
+
+@app.route("/set_lock", methods=["POST"])
+def set_lock():
+    value = request.form.get("value")
+
+    if value not in ["Open", "Closed"]:
+        return "Invalid command", 400
+
+    lock(value)
+    return "OK", 200
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)
