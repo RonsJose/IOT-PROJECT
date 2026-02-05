@@ -17,7 +17,7 @@ TOPICS = ["sensor/temperature",
 
 def mqtt_start(socketio):
     client = mqtt.Client(transport="websockets")
-    client.username_pw_set(os.getenv("USER"),os.getenv("PASSWORD"))
+    client.username_pw_set(os.getenv("USER_MQTT"),os.getenv("PASSWORD"))
 
     def on_connect(client,userdata,flags,rc):
         print("Connected to broker: ",rc)
