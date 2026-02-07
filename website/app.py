@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, send_file, make_response
 from dotenv import load_dotenv 
 from flask_socketio import SocketIO
 import threading 
@@ -8,6 +8,10 @@ from mqtt import mqtt_start,lock
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+UPLOAD_DIR = "uploads"
+LATEST_IMAGE = os.path.join(UPLOAD_DIR, "latest.jpg")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 threading.Thread(target=mqtt_start,args=(socketio,), daemon=True).start()
 
@@ -41,6 +45,24 @@ def set_lock():
 
     lock(value)
     return "OK", 200
+
+@app.route("/upload", methods=["POST"])
+def upload_image():
+    if "image" not in request.files:
+        return "No image", 400
+    request.files["image"].save(LATEST_IMAGE)
+    return "OK", 200
+
+@app.route("/latest.jpg")
+def latest_image():
+    if not os.path.exists(LATEST_IMAGE):
+        return "No image yet", 404
+
+    response = make_response(send_file(LATEST_IMAGE, mimetype="image/jpeg"))
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)
