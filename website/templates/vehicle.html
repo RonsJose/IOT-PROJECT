@@ -109,7 +109,7 @@
             </div>
 
             <div class="Camera">
-                <img id="camera" alt="Camera feed">
+                <img id="camera" src="/latest.jpg" alt="Camera feed">
             </div>
 
         </div>
@@ -151,6 +151,13 @@
         }
 
     });
+
+    function refreshCamera() {
+        const cam = document.getElementById("camera");
+        cam.src = "/latest.jpg?t=" + Date.now();
+    }
+
+    setInterval(refreshCamera, 1000);
 </script>
 
 </html>
