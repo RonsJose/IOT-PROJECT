@@ -38,11 +38,16 @@ def graphs():
 
 @app.route("/set_lock", methods=["POST"])
 def set_lock():
-    value = request.form.get("value")
+    data = request.get_json()
 
+    if not data or "value" not in data:
+        return "Missing value", 400
+    
+    value = data["value"]
+    
     if value not in ["Open", "Closed"]:
         return "Invalid command", 400
-
+    
     lock(value)
     return "OK", 200
 
