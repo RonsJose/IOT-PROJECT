@@ -62,7 +62,7 @@ void uploadImage() {
   HTTPClient https;
   https.begin(client, uploadUrl);
 
-  https.addHeader("Content-Type", "multipart/form-data; boundary=ESP32Boundary");
+  https.addHeader("Content-Type", "multipart/form-data; boundary=stopHere");
 
   camera_fb_t* fb = esp_camera_fb_get();
   if (!fb) {
@@ -71,11 +71,11 @@ void uploadImage() {
   }
 
   String bodyStart =
-    "--ESP32Boundary\r\n"
+    "--stopHere\r\n"
     "Content-Disposition: form-data; name=\"image\"; filename=\"frame.jpg\"\r\n"
     "Content-Type: image/jpeg\r\n\r\n";
 
-  String bodyEnd = "\r\n--ESP32Boundary--\r\n";
+  String bodyEnd = "\r\n--stopHere--\r\n";
 
   int totalLen = bodyStart.length() + fb->len + bodyEnd.length();
   uint8_t* postData = new uint8_t[totalLen];
@@ -106,17 +106,6 @@ void setup() {
   }
 
   Serial.println("\nWiFi connected");
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP());
-
-  WiFiClientSecure client;
-  client.setInsecure();
-  HTTPClient https;
-  https.begin(client, "https://ssia.online/latest.jpg");
-  int code = https.GET();
-  Serial.println(code);
-
-
   startCamera();
 }
 
