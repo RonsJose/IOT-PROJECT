@@ -75,7 +75,7 @@
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="Enter email">
 
-                        <button class="action-btn" onclick="">Create Account</button>
+                        <button class="action-btn" onclick="createAccount()">Create Account</button>
                     </div>
 
                     <div class="card">
@@ -90,7 +90,7 @@
                         <label for="card_label">Card Label</label>
                         <input type="text" id="card_label" placeholder="Main Card / Spare Card">
 
-                        <button class="action-btn" onclick="">Register Card</button>
+                        <button class="action-btn" onclick="registerCard()">Register Card</button>
                     </div>
 
                     <div class="card">
@@ -99,7 +99,7 @@
                         <label for="delete_user_id">User ID</label>
                         <input type="number" id="delete_user_id" placeholder="Enter user ID">
 
-                        <button class="action-btn danger-btn" onclick="">Delete Account</button>
+                        <button class="action-btn danger-btn" onclick="deleteAccount()">Delete Account</button>
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                         <h1>Registered Users</h1>
                         <p>View all current users and their card details.</p>
                     </div>
-                    <button class="action-btn small-btn" onclick="">Refresh</button>
+                    <button class="action-btn small-btn" onclick="loadUsers()">Refresh</button>
                 </div>
 
                 <div id="users_list" class="users-grid"></div>
