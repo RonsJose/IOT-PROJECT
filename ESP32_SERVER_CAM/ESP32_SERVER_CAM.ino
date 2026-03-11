@@ -4,8 +4,6 @@
 #include <HTTPClient.h>
 #include "cred.h"
 
-
-
 // Camera config 
 
 #define PWDN_GPIO_NUM 32
@@ -25,6 +23,9 @@
 #define VSYNC_GPIO_NUM 25
 #define HREF_GPIO_NUM 23
 #define PCLK_GPIO_NUM 22
+
+WiFiClientSecure client;
+HTTPClient https;
 
 void startCamera() {
   camera_config_t config;
@@ -49,33 +50,34 @@ void startCamera() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-  config.frame_size = FRAMESIZE_VGA;
-  config.jpeg_quality = 12;
-  config.fb_count = 1;
+  config.frame_size = FRAMESIZE_HQVGA;
+  config.jpeg_quality = 15;
+  config.fb_count = 2;
 
   esp_camera_init(&config);
 }
 
 void uploadImage() {
-  WiFiClientSecure client;
+  
   client.setInsecure(); 
-  HTTPClient https;
   https.begin(client, uploadUrl);
 
-  https.addHeader("Content-Type", "multipart/form-data; boundary=stopHere");
-
+  https.addHeader("Content-Type", "multipart/form-data; boundary=stophere");
+  
   camera_fb_t* fb = esp_camera_fb_get();
+
   if (!fb) {
     Serial.println("Camera capture failed");
     return;
   }
+  Serial.printf("Time: %lu\n",end-start);
 
   String bodyStart =
-    "--stopHere\r\n"
+    "--stophere\r\n"
     "Content-Disposition: form-data; name=\"image\"; filename=\"frame.jpg\"\r\n"
     "Content-Type: image/jpeg\r\n\r\n";
 
-  String bodyEnd = "\r\n--stopHere--\r\n";
+  String bodyEnd = "\r\n--stophere--\r\n";
 
   int totalLen = bodyStart.length() + fb->len + bodyEnd.length();
   uint8_t* postData = new uint8_t[totalLen];
@@ -83,6 +85,7 @@ void uploadImage() {
   memcpy(postData + bodyStart.length(), fb->buf, fb->len);
   memcpy(postData + bodyStart.length() + fb->len, bodyEnd.c_str(), bodyEnd.length());
 
+  
   int httpCode = https.sendRequest("POST", postData, totalLen);
   if (httpCode > 0) {
     Serial.printf("Upload response: %d\n", httpCode);
@@ -111,5 +114,5 @@ void setup() {
 
 void loop() {
   uploadImage();
-  delay(200);  // 5 fps cause I dont want the camera to blow up 
+  delay(100);  // 5 fps cause I dont want the camera to blow up 
 }
