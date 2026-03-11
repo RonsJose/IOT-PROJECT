@@ -13,6 +13,7 @@ It also locks and sends an email depending on the values recieved from the mqtt 
 #include <SPI.h>
 #include <MFRC522.h>
 #include <ESP32Servo.h>
+#include <ArduinoJson.h>
 
 //Pins
 #define SS_PIN 5
@@ -33,6 +34,16 @@ const long stop = 2000;
 //Variables
 Servo motor;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+enum RFIDMode {
+  NORMAL_MODE,
+  REGISTER_MODE
+};
+
+RFIDMode currentMode = NORMAL_MODE;
+
+String allowedCards[20];
+int allowedCardCount = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -74,6 +85,43 @@ String getlk() {
   }
 }
 
+String readCardUID() {
+  String cardID = "";
+
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    if (mfrc522.uid.uidByte[i] < 0x10) {
+      cardID += "0";
+    }
+    cardID += String(mfrc522.uid.uidByte[i], HEX);
+  }
+
+  cardID.toUpperCase();
+  return cardID;
+}
+
+bool isAuthorizedCard(String uid) {
+  for (int i = 0; i < allowedCardCount; i++) {
+    if (allowedCards[i] == uid) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool addNewCard(String uid) {
+  if (allowedCardCount >= 20) {
+    return false;
+  }
+
+  if (isAuthorizedCard(uid)) {
+    return false;
+  }
+
+  allowedCards[allowedCardCount] = uid;
+  allowedCardCount++;
+  return true;
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -86,6 +134,8 @@ void setup() {
   motor.setPeriodHertz(50);
   motor.attach(pin, 500, 2400);
   motor.write(0);
+  allowedCards[0] = "B7C3B001";
+  allowedCardCount = 1;
 
   client.setCallback(callback);
   client.setServer(mqtt_broker, mqtt_port);
@@ -129,38 +179,53 @@ void loop() {
     Serial.println("Lock Website button\n");
   }
 
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "register") {
+      currentMode = REGISTER_MODE;
+      Serial.println("REGISTER MODE ENABLED - Scan a new card");
+    }
+  }
+
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
 
-    Serial.print("Card ID: ");
-    String cardID = "";  //Reads UID
-    for (byte i = 0; i < mfrc522.uid.size; i++) {
-      Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-      Serial.print(mfrc522.uid.uidByte[i], HEX);
-      cardID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-      cardID.concat(String(mfrc522.uid.uidByte[i], HEX));
-    }
-    Serial.println();
+    String cardID = readCardUID();
 
-    cardID.toUpperCase();  //Converts to uppercase and compares to check if its  the same
-    if (cardID.substring(1) == "B7 C3 B0 01") {
-      Serial.println("Access granted");
-      Serial.println();
+    Serial.print("Scanned Card UID: ");
+    Serial.println(cardID);
 
-      //If its the same depending on the lockCheck lock or unlock
-      if (LockCheck) {
-        unlock();
-        LockCheck = false;
+    if (currentMode == REGISTER_MODE) {
+      if (addNewCard(cardID)) {
+        Serial.println("New card registered successfully");
       } else {
+        Serial.println("Card already exists or storage full");
+      }
+
+      currentMode = NORMAL_MODE;
+      Serial.println("Back to NORMAL MODE");
+    } else if (currentMode == NORMAL_MODE) {
+      if (isAuthorizedCard(cardID)) {
+        Serial.println("Access granted");
+
+        if (LockCheck) {
+          unlock();
+          LockCheck = false;
+        } else {
+          lock();
+          LockCheck = true;
+        }
+      } else {
+        Serial.println("Access denied. Unauthorized card");
         lock();
         LockCheck = true;
       }
-      delay(2000);
-    } else {  //If not the right key, lock the door
-      Serial.println("Access denied. Unauthorized card");
-      lock();
-      LockCheck = true;
-      delay(2000);
     }
+
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
+    delay(1000);
   }
 
   unsigned long now = millis();
