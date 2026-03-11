@@ -160,7 +160,7 @@
     border-color: rgba(255,255,255,0.18);
     background: rgba(255,255,255,0.05);
 }
-
+padding-bottom: 15px;
 .card input::placeholder {
     color: #777;
 }
@@ -218,6 +218,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
+    padding-bottom: 15px;
 }
 
 .users-grid {
@@ -292,5 +293,14 @@
     grid-template-columns: 1fr;
     gap: 20px;
   }
+.grid,    
+.users-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .users-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
 }
