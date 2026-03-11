@@ -5,7 +5,6 @@ import threading
 import os
 from mqtt import mqtt_start,lock
 
-
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -68,6 +67,12 @@ def latest_image():
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return response
+
+@app.route("/accounts")
+def accounts():
+    return render_template('accounts.html')
+
+
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)
