@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask_socketio import SocketIO
 import threading 
 import os
-from mqtt import mqtt_start,lock
+from mqtt import mqtt_start,lock,start_register_mode
 from flask_sqlalchemy import SQLAlchemy
 
 load_dotenv()
@@ -132,24 +132,40 @@ def create_account():
 
 @app.route("/register-card", methods=["POST"])
 def register_card():
-
     data = request.get_json()
+    print("Register card data:", data)
 
-    existing = RFIDCard.query.filter_by(card_uid=data.get("card_uid")).first()
-    
+    card_uid = data.get("card_uid")
+    user_id = data.get("user_id")
+    card_label = data.get("card_label")
+
+    if not card_uid or not user_id:
+        return jsonify({"error": "Missing card_uid or user_id"}), 400
+
+    existing = RFIDCard.query.filter_by(card_uid=card_uid).first()
     if existing:
         return jsonify({"error": "Card already registered"}), 400
 
-    card = RFIDCard(
-        card_uid=data.get("card_uid"),
-        user_id=data.get("user_id"),
-        card_label=data.get("card_label")
-    )
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": f"User {user_id} not found"}), 404
 
-    db.session.add(card)
-    db.session.commit()
+    try:
+        card = RFIDCard(
+            card_uid=card_uid,
+            user_id=user_id,
+            card_label=card_label
+        )
 
-    return jsonify({"message": "Card registered"})
+        db.session.add(card)
+        db.session.commit()
+
+        return jsonify({"message": "Card registered"}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print("Register card error:", e)
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/delete-account/<int:user_id>", methods=["DELETE"])
 def delete_account(user_id):
@@ -184,6 +200,38 @@ def get_users():
         })
 
     return jsonify(result)
+
+@app.route("/rfid-cards", methods=["GET"])
+def get_rfid_cards():
+    cards = RFIDCard.query.order_by(RFIDCard.card_id).all()
+
+    return jsonify([
+        {
+            "card_uid": card.card_uid
+        }
+        for card in cards
+    ]), 200
+
+@app.route("/start-card-registration", methods=["POST"])
+def start_card_registration():
+    data = request.get_json()
+
+    user_id = data.get("user_id")
+    card_label = data.get("card_label")
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+
+    payload = {
+        "mode": "register",
+        "user_id": int(user_id),
+        "card_label": card_label or ""
+    }
+
+    import json
+    start_register_mode(json.dumps(payload))
+
+    return jsonify({"message": "ESP32 set to register mode. Scan card now."}), 200
 
 with app.app_context():
     db.create_all()

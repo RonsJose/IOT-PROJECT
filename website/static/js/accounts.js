@@ -51,27 +51,25 @@ async function createAccount() {
     }
 }
 
-async function registerCard() {
+async function startCardRegistration() {
     clearMessage();
 
     const user_id = document.getElementById("card_user_id").value.trim();
-    const card_uid = document.getElementById("card_uid").value.trim();
     const card_label = document.getElementById("card_label").value.trim();
 
-    if (!user_id || !card_uid) {
-        showMessage("User ID and Card UID are required", true);
+    if (!user_id) {
+        showMessage("User ID is required", true);
         return;
     }
 
     try {
-        const response = await fetch("/register-card", {
+        const response = await fetch("/start-card-registration", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 user_id: user_id,
-                card_uid: card_uid,
                 card_label: card_label
             })
         });
@@ -79,19 +77,13 @@ async function registerCard() {
         const data = await response.json();
 
         if (!response.ok) {
-            showMessage(data.error || "Failed to register card", true);
+            showMessage(data.error || "Failed to start registration mode", true);
             return;
         }
 
-        showMessage(data.message || "Card registered");
-
-        document.getElementById("card_user_id").value = "";
-        document.getElementById("card_uid").value = "";
-        document.getElementById("card_label").value = "";
-
-        loadUsers();
+        showMessage(data.message);
     } catch (error) {
-        showMessage("Error registering card", true);
+        showMessage("Error starting registration mode", true);
     }
 }
 
