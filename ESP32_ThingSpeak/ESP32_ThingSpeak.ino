@@ -1,0 +1,168 @@
+#include <WiFi.h>
+#include <NetworkClient.h>
+#include "ThingSpeak.h"
+#include "cred.h"
+#include <PubSubClient.h>
+
+//Thingspeak Config
+unsigned long channelNum = 3151130;
+#define UPLOAD_PERIOD 20000
+unsigned long uploadLast = 0;
+
+//MQTT client
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+//Sensor data
+String Temp, Dist, Humidity, Blood, Heart, Long, Lat, alcohol, address;
+
+//MQTT config
+const char *mqtt_broker = "165.22.122.17";
+const char *topic1 = "sensor/distance";
+const char *topic2 = "sensor/temperature";
+const char *topic3 = "sensor/humidity";
+const char *topic4 = "sensor/heartrate";
+const char *topic5 = "sensor/blood";
+const char *topic6 = "sensor/latitude";
+const char *topic7 = "sensor/longitude";
+const char *topic9 = "sensor/alcohol";
+const char *topic10 = "gps/address";
+const int mqtt_port = 1883;
+
+//Called whenever a topic receives data and updates the variable for that topic
+void callback(char *topic, byte *payload, unsigned int length) {
+
+  if (strcmp(topic, topic1) == 0) {
+    Dist = "";
+    for (int i = 0; i < length; i++) {
+      Dist += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic2) == 0) {
+    Temp = "";
+    for (int i = 0; i < length; i++) {
+      Temp += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic3) == 0) {
+    Humidity = "";
+    for (int i = 0; i < length; i++) {
+      Humidity += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic4) == 0) {
+    Heart = "";
+    for (int i = 0; i < length; i++) {
+      Heart += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic5) == 0) {
+    Blood = "";
+    for (int i = 0; i < length; i++) {
+      Blood += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic6) == 0) {
+    Lat = "";
+    for (int i = 0; i < length; i++) {
+      Lat += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic7) == 0) {
+    Long = "";
+    for (int i = 0; i < length; i++) {
+      Long += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic9) == 0) {
+    alcohol = "";
+    for (int i = 0; i < length; i++) {
+      alcohol += ((char)payload[i]);
+    }
+  }
+
+  if (strcmp(topic, topic10) == 0) {
+    address = "";
+    for (int i = 0; i < length; i++) {
+      address += ((char)payload[i]);
+    }
+  }
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  ThingSpeak.begin(espClient);
+  Serial.println("");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  client.setCallback(callback);
+  client.setServer(mqtt_broker, mqtt_port);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+   if (!client.connected()) {
+    String client_id = "esp32-client-";
+    client_id += String(WiFi.macAddress());
+    Serial.println("Connecting to mqtt server\n");
+    if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
+      Serial.println("Connected to MQTT server");
+
+      client.subscribe(topic1);
+      client.subscribe(topic2);
+      client.subscribe(topic3);
+      client.subscribe(topic4);
+      client.subscribe(topic5);
+      client.subscribe(topic6);
+      client.subscribe(topic7);
+      client.subscribe(topic9);
+      client.subscribe(topic10);
+    } else {
+      Serial.println("Failed to connect ");
+      Serial.print(client.state());
+      delay(1000);
+    }
+  }
+  client.loop();
+
+  //Uploads data to thingspeak every 20 seconds
+  unsigned long now = millis();
+  if (now - uploadLast >= UPLOAD_PERIOD) {
+
+    if (Temp == "" || Humidity == "" || Dist == "" || Heart == "" || Blood == "") {  //Skips uploading if one of the variables is empty to avoid errors
+      Serial.println("skip");
+      uploadLast = now;
+      return;
+    }
+
+    ThingSpeak.setField(1, Temp.c_str());
+    ThingSpeak.setField(2, Humidity.c_str());
+    ThingSpeak.setField(3, Heart.c_str());
+    ThingSpeak.setField(4, Blood.c_str());
+    ThingSpeak.setField(5, Dist.c_str());
+
+    int result = ThingSpeak.writeFields(channelNum, thingspeak);
+    Serial.println(result);
+
+    uploadLast = now;
+  }
+}
