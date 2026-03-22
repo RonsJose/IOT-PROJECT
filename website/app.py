@@ -233,8 +233,12 @@ def start_card_registration():
 
     return jsonify({"message": "ESP32 set to register mode. Scan card now."}), 200
 
-with app.app_context():
+#with app.app_context():
     db.create_all()
+
+@app.route("/demo")
+def demo():
+    return render_template("demo.html")
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)
