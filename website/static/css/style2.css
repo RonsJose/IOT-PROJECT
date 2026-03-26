@@ -50,15 +50,6 @@
   gap: 20px;
 }
 
-
-#logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: white;
-  font-size: 22px;
-}
-
 #Menu a {
   text-decoration: none;
   color: gray;
@@ -72,29 +63,40 @@
   font-size: 19px;
 }
 
-#logo,
-.item,
-.nav-right {
-  flex: 1;
+#logo {
   display: flex;
   align-items: center;
-}
-
-#logo {
   gap: 12px;
   color: white;
   font-size: 22px;
+  flex-shrink: 0;
 }
 
+.scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex: 1;
+  justify-content: flex-start;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  min-width: 0;
+  padding-left: 20px;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
 
 .item {
-  justify-content: center;
-  gap: 28px;
+  flex: 0 0 auto;
 }
 
-
-.nav-right {
-  justify-content: flex-end;
+.item a {
+  display: block;
+  padding: 8px 14px;
 }
 
 .container {
@@ -248,7 +250,6 @@ button {
     width: 95%;
     padding: 12px 16px;
     gap: 10px;
-    flex-wrap: wrap;
     min-height: auto;
   }
 
@@ -260,13 +261,19 @@ button {
     width: 36px;
   }
 
-  .item a {
+  #Menu a {
     font-size: 14px;
   }
 
-  .item {
-    justify-content: center;
+  .scroll {
+    gap: 4px;
+    padding-left: 12px;
   }
+
+  .item a {
+    padding: 6px 10px;
+  }
+
 
   .container,
   #container {
