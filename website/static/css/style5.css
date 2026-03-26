@@ -116,19 +116,24 @@
 
 .graphs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
     gap: 30px;
 }
 
-.graphs-grid iframe {
-    width: 100%;
-    height: 260px;
+.graph-card {
     border-radius: 18px;
-    border: none;
-    background: black;
+    background: white;
     box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.06),
         0 20px 60px rgba(0, 0, 0, .8);
+}
+
+.graph-card iframe {
+    display: block;
+    width: 100%;
+    height: 260px;
+    border: none;
+    background: white;
 }
 
 
@@ -163,10 +168,6 @@
     .graphs-panel {
         width: 95%;
         padding: 20px;
-    }
-
-    #map {
-        height: 300px;
     }
 
     .container-grid {

@@ -69,16 +69,30 @@
                 <h2>Live Sensor Data</h2>
 
                 <div class="graphs-grid">
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Temperature&type=line&xaxis=Time&yaxis=%C2%B0C"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Humidity&type=line&xaxis=Time&yaxis=%25+Humidity"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Heartrate&type=line&xaxis=Time&yaxis=BPM"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Sp02&type=line&xaxis=Time&yaxis=%25+oxygen"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Distance&type=line&xaxis=Time&yaxis=Cm"></iframe>
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Temperature&type=line&xaxis=Time(HH:MM)&yaxis=%C2%B0C"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Humidity&type=line&xaxis=Time(HH:MM)&yaxis=%25+Humidity"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Heartrate&type=line&xaxis=Time(HH:MM)&yaxis=BPM"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Sp02&type=line&xaxis=Time(HH:MM)&yaxis=%25+oxygen"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Distance&type=line&xaxis=Time(HH:MM)&yaxis=Cm"></iframe>
+                    </div>
                 </div>
             </div>
 
@@ -88,4 +102,3 @@
 </body>
 
 </html>
-    
