@@ -19,66 +19,82 @@
                     <p>SSIA</p>
                 </div>
 
-                <div class="item">
-                    <a href="/" target="_self">
-                        Home
-                    </a>
+                <div class="scroll">
+                    <div class="item">
+                        <a href="/" target="_self">
+                            Home
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="/vehicle" target="_self">
+                            Vehicle
+                        </a>
+
+                    </div>
+
+                    <div class="item">
+                        <a href="/location" target="_self">
+                            Location
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="/health" target="_self">
+                            Health
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="/graphs" target="_self">
+                            Graphs
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="/accounts" target="_self">
+                            Accounts
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="/demo" target="_self">
+                            Demo
+                        </a>
+                    </div>
+
+
                 </div>
-
-                <div class="item">
-                    <a href="/vehicle" target="_self">
-                        Vehicle
-                    </a>
-
-                </div>
-
-                <div class="item">
-                    <a href="/location" target="_self">
-                        Location
-                    </a>
-                </div>
-
-                <div class="item">
-                    <a href="/health" target="_self">
-                        Health
-                    </a>
-                </div>
-
-                <div class="item">
-                    <a href="/graphs" target="_self">
-                        Graphs
-                    </a>
-                </div>
-
-                <div class="item">
-                    <a href="/accounts" target="_self">
-                        Accounts
-                    </a>
-                </div>
-
-                <div class="item">
-                    <a href="/demo" target="_self">
-                        Demo
-                    </a>
-                </div>
-
-                <div class="nav-right"></div>
             </div>
 
             <div class="graphs-panel">
                 <h2>Live Sensor Data</h2>
 
                 <div class="graphs-grid">
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Temperature&type=line&xaxis=Time&yaxis=%C2%B0C"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Humidity&type=line&xaxis=Time&yaxis=%25+Humidity"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Heartrate&type=line&xaxis=Time&yaxis=BPM"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Sp02&type=line&xaxis=Time&yaxis=%25+oxygen"></iframe>
-                    <iframe
-                        src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Distance&type=line&xaxis=Time&yaxis=Cm"></iframe>
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Temperature&type=line&xaxis=Time(HH:MM)&yaxis=%C2%B0C"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Humidity&type=line&xaxis=Time(HH:MM)&yaxis=%25+Humidity"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Heartrate&type=line&xaxis=Time(HH:MM)&yaxis=BPM"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Sp02&type=line&xaxis=Time(HH:MM)&yaxis=%25+oxygen"></iframe>
+                    </div>
+
+                    <div class="graph-card">
+                        <iframe
+                            src="https://thingspeak.mathworks.com/channels/3151130/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=Distance&type=line&xaxis=Time(HH:MM)&yaxis=Cm"></iframe>
+                    </div>
                 </div>
             </div>
 
@@ -88,4 +104,3 @@
 </body>
 
 </html>
-    
