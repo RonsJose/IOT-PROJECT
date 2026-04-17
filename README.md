@@ -32,14 +32,14 @@ To make the workers more efficiently we use eventlet which allows them to work a
 
 
 # Features: 
-*Real-Time Dashboard: Web interface displaying live vehicle data and system status
-*Proximity Detection: Ultrasonic sensor with audio (buzzer) feedback based on distance
-*Driver Safety (Alcohol Detection): Detects high alcohol levels, locks doors, and sends location-based alerts via email
-*Climate Monitoring: Temperature and humidity tracking for driver comfort
-*GPS Tracking: Provides accurate, real-time location data
-*Rear Camera Support: Live camera feed for parking and manoeuvring
-*Health Monitoring: Tracks heart rate and blood oxygen levels
-*RFID Access Control: Lock/unlock system with support for adding and removing authorised cards
+* Real-Time Dashboard: Web interface displaying live vehicle data and system status
+* Proximity Detection: Ultrasonic sensor with audio (buzzer) feedback based on distance
+* Driver Safety (Alcohol Detection): Detects high alcohol levels, locks doors, and sends location-based alerts via email
+* Climate Monitoring: Temperature and humidity tracking for driver comfort
+* GPS Tracking: Provides accurate, real-time location data
+* Rear Camera Support: Live camera feed for parking and manoeuvring
+* Health Monitoring: Tracks heart rate and blood oxygen levels
+* RFID Access Control: Lock/unlock system with support for adding and removing authorised cards
 
 # Optimizations
 
