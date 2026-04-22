@@ -70,7 +70,6 @@ void uploadImage() {
     Serial.println("Camera capture failed");
     return;
   }
-  Serial.printf("Time: %lu\n",end-start);
 
   String bodyStart =
     "--stophere\r\n"

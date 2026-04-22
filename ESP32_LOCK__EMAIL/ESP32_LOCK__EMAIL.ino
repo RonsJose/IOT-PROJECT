@@ -297,7 +297,7 @@ void loop() {
   }
 
   //Checks for high alcohol level
-  if (al == "Alcohol level: High") {
+  if (al == "High") {
     String emailBody = al + "\nLocation: " + ad;
     sendMail("Alert", emailBody);  //Sends email
     lock();                        //Locks

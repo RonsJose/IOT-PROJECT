@@ -27,7 +27,6 @@ float cms;
 Adafruit_GPS GPS(&GPSSerial);
 #define GPSECHO false
 int mq3Pin = 32;
-float R0 = 0;
 
 uint32_t timer = millis();
 unsigned long previous = 0;
@@ -115,30 +114,16 @@ String getLongitude() {
 //Gets the current alcohol reading from sensor and compares it to first reading to get current reading / inital reading
 String getAlcohol() {
   int sensorValue = analogRead(mq3Pin);
-  float sensor_volt = sensorValue / 4095.0 * 3.3;
-  float RS_gas = (3.3 - sensor_volt) / sensor_volt;
 
+  Serial.print("Alcohol Sensor:");
+  Serial.println(sensorValue,DEC);
 
-  float ratio = RS_gas / R0;
-
-  float BAC_mgL = 0.1896 * pow(ratio, 2.0) - 8.6178 * ratio / 10.0 + 1.0792;
-
-
-  float BAC_gdL = BAC_mgL * 0.2;
-
-  Serial.print("RS/R0: ");
-  Serial.print(ratio, 3);
-  Serial.print("  BAC (mg/L): ");
-  Serial.print(BAC_mgL, 3);
-  Serial.print("  Approx BAC (g/dL): ");
-  Serial.println(BAC_gdL, 3);
-
-  if (ratio > 0.95) {
-    return ("Alcohol level: Clean air");
-  } else if (ratio > 0.85) {
-    return ("Alcohol level: Low");
-  } else {
-    return ("Alcohol level: High");
+  if (sensorValue <= 250) {
+    return ("Clean air");
+  } else if (sensorValue >= 270 && sensorValue <= 319) {
+    return ("Low");
+  } else if(sensorValue>=320) {
+    return ("High");
   }
 }
 
@@ -220,17 +205,6 @@ void setup() {
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
   GPS.sendCommand(PGCMD_ANTENNA);
   delay(1000);
-
-  //Gets inital reading for alcohol sensor
-  float RS_sum = 0;
-  for (int i = 0; i < 100; i++) {
-    int val = analogRead(mq3Pin);
-    float volt = val / 4095.0 * 3.3;
-    float RS = (3.3 - volt) / volt;
-    RS_sum += RS;
-    delay(50);
-  }
-  R0 = RS_sum / 100.0;
 
   //Connects to mqtt broker
   client.setServer(mqtt_broker, mqtt_port);
