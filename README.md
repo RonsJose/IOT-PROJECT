@@ -66,8 +66,15 @@ ESP32, HC-SR04, DHT 11, MikroElektronika Heart Rate 3 Click (MAX30100), Ultimate
 
 
 * To make the workers more efficient we use eventlet which allows them to work asynchronously, i.e can handle more than one request at a time.
+  
 
-* 
+* MQTT is used for lightweight, real-time communication between the ESP32 devices and the server, allowing sensor data to be transmitted efficiently with minimal overhead.
+  
+
+* HTTP and WebSockets are used for frontend communication, enabling both standard requests (such as page loading and image upload) and live updates to the dashboard without having to refresh the page.
+
+
+* The PostgreSQL database is used to store system data such as user accounts and RFID card information, allowing the backend to manage authentication and access control.
 
 
 
@@ -84,12 +91,3 @@ ESP32, HC-SR04, DHT 11, MikroElektronika Heart Rate 3 Click (MAX30100), Ultimate
 * Rear Camera Support: Live camera feed for parking and manoeuvring
 * Health Monitoring: Tracks heart rate and blood oxygen levels
 * RFID Access Control: Lock/unlock system with support for adding and removing authorised cards
-
-# Optimizations
-
-# Lessons Learned:
-
-
-
-
-
