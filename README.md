@@ -9,6 +9,11 @@ Link to project: [https://ssia.online]
 <img width="1952" height="1058" alt="image" src="https://github.com/user-attachments/assets/2a5a942a-ca8f-46a1-8f9b-ed3369e51a9d" />
 
 # How It's Made:
+**Architecture Diagram:**
+
+<img width="1714" height="1293" alt="arch drawio (1)" src="https://github.com/user-attachments/assets/6e5993fa-d493-428e-9736-f0ec1673c798" />
+<br/>
+
 **Software used:** C/C++, HTML, CSS, JavaScript, Flask, Gunicorn, Eventlet, Nginx, PostgreSQL, SQL Alchemy, MQTT, Eclipse Mosquitto, HTTP, WebSockets, Socket.io, REST API's, Cloud Deployment(DigitalOcean), Linux, UART, I2C, SPI 
 
 
