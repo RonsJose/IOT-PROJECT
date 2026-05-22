@@ -8,6 +8,16 @@ Link to project: [https://ssia.online]
 
 <img width="1952" height="1058" alt="image" src="https://github.com/user-attachments/assets/2a5a942a-ca8f-46a1-8f9b-ed3369e51a9d" />
 
+# Features: 
+* Real-Time Dashboard: Web interface displaying live vehicle data and system status
+* Proximity Detection: Ultrasonic sensor with audio (buzzer) feedback based on distance
+* Driver Safety (Alcohol Detection): Detects high alcohol levels, locks doors, and sends location-based alerts via email
+* Climate Monitoring: Temperature and humidity tracking for driver comfort
+* GPS Tracking: Provides accurate, real-time location data
+* Rear Camera Support: Live camera feed for parking and manoeuvring
+* Health Monitoring: Tracks heart rate and blood oxygen levels
+* RFID Access Control: Lock/unlock system with support for adding and removing authorised cards
+
 # How It's Made:
 **Architecture Diagram:**
 
@@ -87,12 +97,4 @@ ESP32, HC-SR04, DHT 11, MikroElektronika Heart Rate 3 Click (MAX30100), Ultimate
 
 
 
-# Features: 
-* Real-Time Dashboard: Web interface displaying live vehicle data and system status
-* Proximity Detection: Ultrasonic sensor with audio (buzzer) feedback based on distance
-* Driver Safety (Alcohol Detection): Detects high alcohol levels, locks doors, and sends location-based alerts via email
-* Climate Monitoring: Temperature and humidity tracking for driver comfort
-* GPS Tracking: Provides accurate, real-time location data
-* Rear Camera Support: Live camera feed for parking and manoeuvring
-* Health Monitoring: Tracks heart rate and blood oxygen levels
-* RFID Access Control: Lock/unlock system with support for adding and removing authorised cards
+
