@@ -3,9 +3,6 @@
 The smart system integration for automobiles (SSIA), is an IoT based system that aims to improve and aid, both old and new cars alike. The primary purpose is to bring them more safety and comfort features, at a substantially lower cost. Striving towards a better world, the SSIA follows the United Nations sustainable development goals such as good health and well-being, industry innovation an infrastructure, sustainable cities and communties & responsible consumption and production.
 
 
-Link to project: [https://ssia.online]
-
-
 <img width="1952" height="1058" alt="image" src="https://github.com/user-attachments/assets/2a5a942a-ca8f-46a1-8f9b-ed3369e51a9d" />
 
 # Features: 
